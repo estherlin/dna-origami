@@ -62,6 +62,11 @@ class Sequence:
 		energy_matrix.create()
 		return exp(-np.linalg.norm(energy_matrix.matrix))
 
+	def print(self):
+		print("SEQUENCE:")
+		for strand_struct in self.strand_structures:
+			built_strand = self.build_strand(strand_struct)
+			print(built_strand.bases)
 
 class GeneticAlgorithm:
 	"""
@@ -78,7 +83,7 @@ class GeneticAlgorithm:
 		self.population_size = population_size
 		self.mutation_rate = mutation_rate
 		self.population = initial_sequences + [Sequence.random_sequence(structure) for i in range(population_size - len(initial_sequences))]
-		self.mfold = Mfold(mfold_command='mfold')
+		self.mfold = Mfold(output_folder='/home/ubuntu', mfold_command='mfold')
 
 	def iterate(self):
 		# Find the fitness of each sequence in the population
@@ -109,6 +114,8 @@ class GeneticAlgorithm:
 	def run(self):
 		for i in range(self.iterations):
 			self.iterate()
+			for sequence in self.population:
+				sequence.print()
 
 
 

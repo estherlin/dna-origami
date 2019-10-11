@@ -57,8 +57,8 @@ class Mfold:
             for constraint in Mfold.get_constraints(strand1, strand2):
                 setfile.write(constraint)
 
-        #subprocess.run([self.command, f'SEQ={seq_path}', f'AUX={set_path}'],
-        #        cwd=self.folder)
+        subprocess.run([self.command, f'SEQ={seq_path}', f'AUX={set_path}'],
+                cwd=self.folder)
 
 
     def clean(self, file_prefix):
@@ -71,12 +71,11 @@ class Mfold:
     def get_energy(self, details_file='a.det'):
         details_path = os.path.join(self.folder, details_file)
         if os.path.exists(details_path):
-            with open(details_path, 'r') as detfile:
+           with open(details_path, 'r') as detfile:
                 for line in detfile:
                     if line.startswith(Mfold.energy_string):
                         return float(line[len(Mfold.energy_string):])
         return None
-            
 
     def get_constraints(strand1, strand2):
         constraints = []
@@ -84,17 +83,17 @@ class Mfold:
 
         curr_index = 0
         for region in strand1.constraints:
-            all_regions[region.name] = (curr_index, curr_index + region.length)
+            all_regions[region.name] = (curr_index, curr_index + region.length - 1)
             curr_index += region.length
 
         curr_index += 3
         for region in strand2.constraints:
-            all_regions[region.name] = (curr_index, curr_index + region.length)
+            all_regions[region.name] = (curr_index, curr_index + region.length - 1)
             curr_index += region.length
 
 
         for region in all_regions:
-            if region.isupper():
+            if region.isupper() and region.lower() in all_regions:
                 constraints.append(
                         f'P {all_regions[region.lower()][0]} {all_regions[region.lower()][1]} '
                         + f'{all_regions[region][0]} {all_regions[region][1]}')
