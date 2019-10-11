@@ -1,4 +1,5 @@
 import os
+import re
 import string
 import subprocess
 
@@ -6,9 +7,14 @@ import subprocess
 class Strand:
     allowed_bases = set('ATCG')
     allowed_constraints = set(string.ascii_letters + string.digits)
-    
+    base_pair = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
 
     def __init__(self, bases, constraints):
+        """
+        Args:
+            bases: A string representing the bases in a strand
+            constraints: A list of Regions representing the structure of a strand
+        """
         self.bases = bases.upper()
         self.constraints = constraints
         if set(self.bases) > Strand.allowed_bases:
@@ -18,18 +24,15 @@ class Strand:
             raise TypeError('The selected constraints contain '
                           + 'non-alphanumeric characters: ' + constraints)
 
-
+    def complement(bases):
+        return "".join([Strand.base_pair[base] for base in bases])
 
 class Region:
-    def __init__(self, char, index, length):
-        # the character that represents the region, e.g. 'A3' -> 'A'
-        self.char = char
-        # the index that the region starts at in the sequence
-        self.start = index
-        # one past the index that the region ends at in the sequence
-        self.end = index + length
-
-
+    def __init__(self, name, length):
+        # the name that represents the region, e.g. 'A3' -> 'A'
+        self.name = name
+        # the length of the region
+        self.length = length
 
 class Mfold:
     energy_string = ' Initial dG = '
@@ -54,8 +57,8 @@ class Mfold:
             for constraint in Mfold.get_constraints(strand1, strand2):
                 setfile.write(constraint)
 
-        subprocess.run([self.command, f'SEQ={seq_path}', f'AUX={set_path}'],
-                cwd=self.folder)
+        #subprocess.run([self.command, f'SEQ={seq_path}', f'AUX={set_path}'],
+        #        cwd=self.folder)
 
 
     def clean(self, file_prefix):
@@ -76,54 +79,26 @@ class Mfold:
             
 
     def get_constraints(strand1, strand2):
-        regions1 = Mfold.index_constraints(strand1, 0)
-        regions2 = Mfold.index_constraints(
-                strand2, len(strand1.constraints) + 3)
         constraints = []
+        all_regions = {}
 
-        for lower_char in string.ascii_lowercase:
-            upper_char = lower_char.upper()
-            if lower_char in regions1:
-                lower_segment = regions1[lower_char]
-            elif lower_char in regions2:
-                lower_segment = regions2[lower_char]
-            else:
-                lower_segment = None
+        curr_index = 0
+        for region in strand1.constraints:
+            all_regions[region.name] = (curr_index, curr_index + region.length)
+            curr_index += region.length
 
-            if upper_char in regions1:
-                upper_segment = regions1[upper_char]
-            elif upper_char in regions2:
-                upper_segment = regions2[upper_char]
-            else:
-                upper_segment = None
+        curr_index += 3
+        for region in strand2.constraints:
+            all_regions[region.name] = (curr_index, curr_index + region.length)
+            curr_index += region.length
 
-            if lower_segment and upper_segment:
+
+        for region in all_regions:
+            if region.isupper():
                 constraints.append(
-                        f'P {lower_segment.start} {lower_segment.end} '
-                        + f'{upper_segment.start} {upper_segment.end}')
+                        f'P {all_regions[region.lower()][0]} {all_regions[region.lower()][1]} '
+                        + f'{all_regions[region][0]} {all_regions[region][1]}')
         return constraints
-
-
-    # TODO: can only handle 26 or fewer pairing regions
-    def index_constraints(strand, starting_index=0):
-        # index is the index of the constraint in the final strand
-        index = starting_index
-        regions = dict()
-
-        for i in range(len(strand.constraints)):
-            char = strand.constraints[i]
-            if char.isalpha():
-                j = i+1
-                while (j < len(strand.constraints) 
-                        and strand.constraints[j].isdigit()):
-                    j += 1
-                length = int(strand.constraints[i+1:j])
-                regions[char] = Region(char, index, length)
-                index += length
-
-        assert(index - starting_index == len(strand.bases))
-        return regions
-
 
 
 class EnergyMatrix:
