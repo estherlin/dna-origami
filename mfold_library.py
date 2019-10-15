@@ -3,18 +3,17 @@ import re
 import string
 import subprocess
 
-
 class Strand:
     allowed_bases = set('ATCG')
     allowed_constraints = set(string.ascii_letters + string.digits)
     base_pair = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
 
+    """
+    Args:
+        bases: A string representing the bases in a strand
+        constraints: A list of Regions representing the structure of a strand
+    """
     def __init__(self, bases, constraints):
-        """
-        Args:
-            bases: A string representing the bases in a strand
-            constraints: A list of Regions representing the structure of a strand
-        """
         self.bases = bases.upper()
         self.constraints = constraints
         if set(self.bases) > Strand.allowed_bases:
@@ -24,10 +23,23 @@ class Strand:
             raise TypeError('The selected constraints contain '
                           + 'non-alphanumeric characters: ' + constraints)
 
+    """
+    Returns the complement of a string of bases.
+    Args:
+        bases: The string of bases to find the complement of.
+    Returns:
+        A string representing the complement.
+    """
+    @staticmethod
     def complement(bases):
         return "".join([Strand.base_pair[base] for base in bases])
 
 class Region:
+    """
+    Args:
+        name: A string representing the name of the region. It should either be all uppercase or all lowercase.
+        length: The number of bases in the region.
+    """
     def __init__(self, name, length):
         # the name that represents the region, e.g. 'A3' -> 'A'
         self.name = name
