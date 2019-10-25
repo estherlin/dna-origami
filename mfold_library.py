@@ -49,7 +49,7 @@ class Region:
 class Mfold:
     energy_string = ' Initial dG = '
     linker_sequence = 'LLL'
-    output_suffixes = ['.aux', '.cmd', '.con', '.log', '.pnt', '.sav', '.seq'
+    output_suffixes = ['.aux', '.cmd', '.con', '.log', '.pnt', '.sav', '.seq', '.ss',
             '-local.pnt', '-local.seq', '.ann', '.ct', '.ps', '.det', '.out',
             '.h-num', '.plot', '.pdf', '.ss-count', '-temp.det', '-temp.out']
 
@@ -78,7 +78,6 @@ class Mfold:
             file_path = os.path.join(self.folder, f'{file_prefix}{suffix}')
             if os.path.exists(file_path):
                 os.remove(file_path)
-
 
     def get_energy(self, details_file='a.det'):
         details_path = os.path.join(self.folder, details_file)
@@ -122,7 +121,6 @@ class EnergyMatrix:
         for i, strand1 in enumerate(self.strands):
             for j, strand2 in enumerate(self.strands):
                 self.mfold.clean(f'{i}_{j}')
+                self.mfold.clean(f'{i}_{j}_[0-9]*')
                 self.mfold.run(strand1, strand2, f'{i}_{j}.seq', f'{i}_{j}.aux')
-        self.matrix = [[self.mfold.get_energy(f'{i}_{j}.det')
-                for i in range(len(self.strands))] 
-                    for j in range(len(self.strands))]
+        self.matrix = [[self.mfold.get_energy(f'{i}_{j}.det')]]

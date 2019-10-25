@@ -187,6 +187,3 @@ class GeneticAlgorithm:
 			self.iterate()
 			for sequence in self.population:
 				sequence.print()
-
-
-
