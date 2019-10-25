@@ -1,3 +1,4 @@
+from glob import glob
 import os
 import re
 import string
@@ -72,12 +73,16 @@ class Mfold:
         subprocess.run([self.command, f'SEQ={seq_path}', f'AUX={set_path}'],
                 cwd=self.folder)
 
+    def clean_all(self):
+        for suffix in Mfold.output_suffixes:
+            for file in glob(f'{self.folder}/*{suffix}'):
+                os.remove(file)
 
     def clean(self, file_prefix):
         for suffix in Mfold.output_suffixes:
             file_path = os.path.join(self.folder, f'{file_prefix}{suffix}')
-            if os.path.exists(file_path):
-                os.remove(file_path)
+            for file in glob(file_path):
+                os.remove(file)
 
     def get_energy(self, details_file='a.det'):
         details_path = os.path.join(self.folder, details_file)
@@ -120,7 +125,7 @@ class EnergyMatrix:
     def create(self):
         for i, strand1 in enumerate(self.strands):
             for j, strand2 in enumerate(self.strands):
-                self.mfold.clean(f'{i}_{j}')
-                self.mfold.clean(f'{i}_{j}_[0-9]*')
+                self.mfold.clean_all()
                 self.mfold.run(strand1, strand2, f'{i}_{j}.seq', f'{i}_{j}.aux')
-        self.matrix = [[self.mfold.get_energy(f'{i}_{j}.det')]]
+                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det')
+

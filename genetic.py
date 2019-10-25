@@ -183,6 +183,7 @@ class GeneticAlgorithm:
 	Run the genetic algorithm.
 	"""
 	def run(self):
+		#self.mfold.clean_all()
 		for i in range(self.iterations):
 			self.iterate()
 			for sequence in self.population:
