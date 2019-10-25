@@ -26,10 +26,8 @@ class Sequence:
 		for strand_structure in sequence_structure:
 			for region in strand_structure:
 				if not region.name.lower() in region_defs:
-					# TODO: this typecasting is so bad... sample is to choose without replacement
 					region_defs[region.name] = "".join([choice(list(Strand.allowed_bases))
 														for i in range(0, region.length)])
-					#region_defs[region.name] = "".join(sample(Strand.allowed_bases, region.length))
 		return Sequence(region_defs, sequence_structure)
 
 	"""
