@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 *.aux
 *.seq
+*.icloud
+.DS_Store
