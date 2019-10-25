@@ -1,7 +1,7 @@
 from mfold_library import Strand, Region, Mfold, EnergyMatrix
 from math import exp
 import numpy as np
-from random import randrange, random, sample
+from random import randrange, random, sample, choice
 
 class Sequence:
 	"""
@@ -26,7 +26,10 @@ class Sequence:
 		for strand_structure in sequence_structure:
 			for region in strand_structure:
 				if not region.name.lower() in region_defs:
-					region_defs[region.name] = "".join(sample(Strand.allowed_bases, region.length))
+					# TODO: this typecasting is so bad... sample is to choose without replacement
+					region_defs[region.name] = "".join([choice(list(Strand.allowed_bases))
+														for i in range(0, region.length)])
+					#region_defs[region.name] = "".join(sample(Strand.allowed_bases, region.length))
 		return Sequence(region_defs, sequence_structure)
 
 	"""
@@ -131,7 +134,7 @@ class GeneticAlgorithm:
 		self.population_size = population_size
 		self.mutation_rate = mutation_rate
 		self.population = initial_sequences + [Sequence.random_sequence(structure) for i in range(population_size - len(initial_sequences))]
-		self.mfold = Mfold(output_folder='/home/ubuntu', mfold_command='mfold')
+		self.mfold = Mfold(output_folder='./', mfold_command='mfold')
 
 	"""
 	Do one iteration of the genetic algorithm.
