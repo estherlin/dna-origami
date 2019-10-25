@@ -95,20 +95,20 @@ class Mfold:
 
         curr_index = 0
         for region in strand1.constraints:
-            all_regions[region.name] = (curr_index, curr_index + region.length - 1)
+            all_regions[region.name] = (curr_index + 1, curr_index + region.length)
             curr_index += region.length
 
         curr_index += 3
         for region in strand2.constraints:
-            all_regions[region.name] = (curr_index, curr_index + region.length - 1)
+            all_regions[region.name] = (curr_index + 1, curr_index + region.length)
             curr_index += region.length
 
 
         for region in all_regions:
             if region.isupper() and region.lower() in all_regions:
                 constraints.append(
-                        f'P {all_regions[region.lower()][0]} {all_regions[region.lower()][1]} '
-                        + f'{all_regions[region][0]} {all_regions[region][1]}')
+                        f'P {all_regions[region.lower()][0]}-{all_regions[region.lower()][1]} '
+                        + f'{all_regions[region][0]}-{all_regions[region][1]}')
         return constraints
 
 
