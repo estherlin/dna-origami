@@ -4,6 +4,9 @@ import re
 import string
 import subprocess
 
+TEMPERATURE = 310.15
+BOLTZMANN = 1.38064852 * (10**-23)
+
 class Strand:
     allowed_bases = set('ATCG')
     allowed_constraints = set(string.ascii_letters + string.digits)
@@ -91,7 +94,7 @@ class Mfold:
                 for line in detfile:
                     if line.startswith(Mfold.energy_string):
                         return float(line[len(Mfold.energy_string):])
-        return None
+        return 0
 
     def get_constraints(strand1, strand2):
         constraints = []

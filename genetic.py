@@ -2,6 +2,7 @@ from mfold_library import Strand, Region, Mfold, EnergyMatrix
 from math import exp
 import numpy as np
 from random import randrange, random, sample, choice
+import json
 
 class Sequence:
 	"""
@@ -103,12 +104,13 @@ class Sequence:
 		A number representing the fitness of the sequence.
 	"""
 	def fitness(self, mfold, cache):
-		strands = [self.build_strand(strand_structure) for strand_structure in self.strand_structures]
-		if not self in cache:
+		region_hash = json.dumps(self.region_definitions, sort_keys=True)
+		if not region_hash in cache:
+			strands = [self.build_strand(strand_structure) for strand_structure in self.strand_structures]
 			energy_matrix = EnergyMatrix(mfold, strands)
 			energy_matrix.create()
-			cache[self] = exp(-np.linalg.norm(energy_matrix.matrix))
-		return cache[self]
+			cache[region_hash] = energy_matrix.matrix
+		return exp(-np.linalg.norm(cache[region_hash]))
 
 	"""
 	Prints out the strands in the sequence.
@@ -118,20 +120,6 @@ class Sequence:
 		for strand_struct in self.strand_structures:
 			built_strand = self.build_strand(strand_struct)
 			print(built_strand.bases)
-
-	"""
-	Hash of the Sequence object
-	"""
-	def __hash__(self):
-        return hash(self.region_definitions)
-
-    """
-    Tests for equality of two Sequence objects. Technically, the strand structures
-    should be tested as well but because all comparisons being made will always have the same structure,
-    this shortcut will work for our purposes. 
-    """
-    def __eq__(self, other):
-        return self.region_definitions == other.region_definitions
 
 class GeneticAlgorithm:
 	"""
@@ -204,5 +192,9 @@ class GeneticAlgorithm:
 		#self.mfold.clean_all()
 		for i in range(self.iterations):
 			self.iterate()
-			for sequence in self.population:
-				sequence.print()
+		for sequence in self.population:
+			sequence.print()
+			seq_hash = json.dumps(sequence.region_definitions, sort_keys=True)
+			if seq_hash in self.cache:
+				print("INTERACIONS:")
+				print(self.cache[seq_hash])
