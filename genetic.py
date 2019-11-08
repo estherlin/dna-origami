@@ -102,11 +102,13 @@ class Sequence:
 	Returns:
 		A number representing the fitness of the sequence.
 	"""
-	def fitness(self, mfold):
+	def fitness(self, mfold, cache):
 		strands = [self.build_strand(strand_structure) for strand_structure in self.strand_structures]
-		energy_matrix = EnergyMatrix(mfold, strands)
-		energy_matrix.create()
-		return exp(-np.linalg.norm(energy_matrix.matrix))
+		if not self in cache:
+			energy_matrix = EnergyMatrix(mfold, strands)
+			energy_matrix.create()
+			cache[self] = exp(-np.linalg.norm(energy_matrix.matrix))
+		return cache[self]
 
 	"""
 	Prints out the strands in the sequence.
@@ -116,6 +118,20 @@ class Sequence:
 		for strand_struct in self.strand_structures:
 			built_strand = self.build_strand(strand_struct)
 			print(built_strand.bases)
+
+	"""
+	Hash of the Sequence object
+	"""
+	def __hash__(self):
+        return hash(self.region_definitions)
+
+    """
+    Tests for equality of two Sequence objects. Technically, the strand structures
+    should be tested as well but because all comparisons being made will always have the same structure,
+    this shortcut will work for our purposes. 
+    """
+    def __eq__(self, other):
+        return self.region_definitions == other.region_definitions
 
 class GeneticAlgorithm:
 	"""
@@ -133,13 +149,14 @@ class GeneticAlgorithm:
 		self.mutation_rate = mutation_rate
 		self.population = initial_sequences + [Sequence.random_sequence(structure) for i in range(population_size - len(initial_sequences))]
 		self.mfold = Mfold(output_folder='./', mfold_command='mfold')
+		self.cache = {}
 
 	"""
 	Do one iteration of the genetic algorithm.
 	"""
 	def iterate(self):
 		# Find the fitness of each sequence in the population
-		fitnesses = [sequence.fitness(self.mfold) for sequence in self.population]
+		fitnesses = [sequence.fitness(self.mfold, self.cache) for sequence in self.population]
 		weighted_fitnesses = [fitness/sum(fitnesses) for fitness in fitnesses]
 
 		# Mate strands at random, weighted by fitness level
