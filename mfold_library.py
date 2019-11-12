@@ -51,7 +51,7 @@ class Region:
         self.length = length
 
 class Mfold:
-    energy_string = ' Initial dG = '
+    energy_string = ' dG = '
     linker_sequence = 'LLL'
     output_suffixes = ['.aux', '.cmd', '.con', '.log', '.pnt', '.sav', '.seq', '.ss',
             '-local.pnt', '-local.seq', '.ann', '.ct', '.ps', '.det', '.out',
