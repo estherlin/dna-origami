@@ -28,9 +28,6 @@ if [ $# = 0 ]; then
 	exit 2
 fi
 
-# Write header
-echo "$Package version $Version"
-
 # Set default values.
 SEQ=/dev/null
 NA=DNA
@@ -50,31 +47,6 @@ while [ $COUNT != 0 ]; do
 		SEQ=`echo $1 | cut -d= -f2`
 	elif [ `echo $1 | cut -d= -f1` = "AUX" ]; then
 		AUX=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "NA" ]; then
-		NA=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "LC" ]; then
-		LC=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "T" ]; then
-		T=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "NA_CONC" ]; then
-		NA_CONC=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "MG_CONC" ]; then
-		MG_CONC=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "P" ]; then
-		P=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "W" ]; then
-		W=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "MAXBP" ]; then
-		MAXBP=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "MAX" ]; then
-		MAX=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "START" ]; then
-		START=`echo $1 | cut -d= -f2`
-	elif [ `echo $1 | cut -d= -f1` = "STOP" ]; then
-		STOP=`echo $1 | cut -d= -f2`
-	else
-		echo "Invalid entry: " $1 "on command line."
-		exit
 	fi
 	COUNT=`expr $COUNT - 1`
 	shift
@@ -112,7 +84,6 @@ if [ "$MAXBP" != "no limit" ]; then
 	echo -e "9\n" $MAXBP|tr -d " " >> $FILE_PREFIX.con
 fi
 if [ -s $AUX ]; then
-	echo "Constraint file is " $AUX
 #  Single force
 	grep F $AUX|tr "O" "0"|grep " 0 "|sed 's/F/2+/g'|\
 	sed 's/ 0 / /g'|tr "+" "\012" >> $FILE_PREFIX.con
@@ -134,7 +105,6 @@ fi
 auxgen ${FILE_PREFIX}-local > $LOGFILE 2>&1 || abort "auxgen failed"
 mv ${FILE_PREFIX}-local.pnt $FILE_PREFIX.pnt
 SEQ_NAME=`head -n1 $FILE_PREFIX.pnt|cut -c1-72|tr -s " " " "|sed 's/^ //'|sed 's/^>//'`
-echo $FILE_PREFIX.pnt "created."
 
 LENGTH=`grep '^#BASES= ' $FILE_PREFIX.pnt|awk '{printf "%d",$2}'`
 if [ $STOP -gt $LENGTH ]; then
@@ -144,7 +114,6 @@ if [ $START -lt 1 ]; then
     START=1
 fi
 LENGTH=`expr $STOP - $START + 1`
-echo "Sequence length is" $LENGTH
 
 # Generate energy tables for temperature T
 # EXT is extension for energy file names
@@ -170,21 +139,12 @@ fi
 
 ARG1=`echo $LC | cut -c1`
 
-if [ $EXT = dat ]; then
-	echo "Folding at 37 degrees using version 3.0 dat files."
-else
-	newtemp >> $LOGFILE 2>&1 <<-EOF || abort "newtemp failed"
-		$NA
-		$T
-		$NA_CONC
-		$MG_CONC
-	EOF
-	if [ $NA = RNA ]; then
-		echo "RNA free energy files (version 2.3) at $T degrees created."
-	else
-		echo "DNA free energy files (version 3.0) at $T degrees created."
-	fi
-fi
+newtemp >> $LOGFILE 2>&1 <<-EOF || abort "newtemp failed"
+	$NA
+	$T
+	$NA_CONC
+	$MG_CONC
+EOF
 
 # Fold the sequences
 
@@ -224,7 +184,6 @@ fi
 # Finish nafold command file.
 echo "10" >> $FILE_PREFIX.cmd
 nafold $ARG1 text < $FILE_PREFIX.cmd >>$LOGFILE 2>&1 || abort "Fill run failed"
-echo "Save file created using nafold."
 if [ ! -s $FILE_PREFIX.sav ] ; then
 	abort "Save file is empty. No foldings."
 fi
@@ -251,5 +210,3 @@ EOF
 
 # Cleanup
 rm -f mfold.log fort.* *.$EXT
-
-echo "All done."
