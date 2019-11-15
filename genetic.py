@@ -4,6 +4,10 @@ import numpy as np
 from random import randrange, random, sample, choice
 import json
 
+TEMPERATURE = 310.15
+BOLTZMANN = 1.38064852 * (10**-23)
+AVOGADRO = 6.0221409 * (10**23)
+
 class Sequence:
 	"""
 	Args:
@@ -110,7 +114,7 @@ class Sequence:
 			energy_matrix = EnergyMatrix(mfold, strands)
 			energy_matrix.create()
 			cache[region_hash] = energy_matrix.matrix
-		return exp(-np.linalg.norm(cache[region_hash]))
+		return np.linalg.norm(cache[region_hash]) * 1000/(TEMPERATURE * AVOGADRO * BOLTZMANN)
 
 	"""
 	Prints out the strands in the sequence.
@@ -131,13 +135,14 @@ class GeneticAlgorithm:
 	Attributes:
 		population: A list of sequences
 	"""
-	def __init__(self, structure, population_size=50, mutation_rate=100, iterations=100, initial_sequences=[]):
+	def __init__(self, structure, mfold_command, population_size=50, mutation_rate=100, iterations=100, initial_sequences=[]):
 		self.iterations = iterations
 		self.population_size = population_size
 		self.mutation_rate = mutation_rate
 		self.population = initial_sequences + [Sequence.random_sequence(structure) for i in range(population_size - len(initial_sequences))]
-		self.mfold = Mfold(output_folder='./', mfold_command='mfold')
+		self.mfold = Mfold(output_folder='./', mfold_command=mfold_command)
 		self.cache = {}
+		self.fitness_history = []
 
 	"""
 	Do one iteration of the genetic algorithm.
@@ -145,14 +150,21 @@ class GeneticAlgorithm:
 	def iterate(self):
 		# Find the fitness of each sequence in the population
 		fitnesses = [sequence.fitness(self.mfold, self.cache) for sequence in self.population]
-		weighted_fitnesses = [fitness/sum(fitnesses) for fitness in fitnesses]
+		power_sum = sum([exp(-fitness) for fitness in fitnesses])
+		weighted_fitnesses = [exp(-fitness)/power_sum for fitness in fitnesses]
+		self.fitness_history += [fitnesses]
+
+		# Save the best child
+		best_child = self.population[np.argmax(weighted_fitnesses)]
 
 		# Mate strands at random, weighted by fitness level
-		self.population = [self.generate_child(weighted_fitnesses) for i in range(self.population_size)]
+		self.population = [self.generate_child(weighted_fitnesses) for i in range(self.population_size - 1)]
 
 		# Mutate the strands
 		for sequence in self.population:
 			sequence.mutate(self.mutation_rate)
+
+		self.population.append(best_child)
 
 	"""
 	Given a list of weights, find out which member of the population a number refers to.
@@ -189,12 +201,14 @@ class GeneticAlgorithm:
 	Run the genetic algorithm.
 	"""
 	def run(self):
-		#self.mfold.clean_all()
 		for i in range(self.iterations):
+			print("ITERATION", i)
 			self.iterate()
+			if i == self.iterations/2:
+				self.mutation_rate /= 2
+	"""
+	Prints all the sequences in the population.
+	"""
+	def print_population(self):
 		for sequence in self.population:
 			sequence.print()
-			seq_hash = json.dumps(sequence.region_definitions, sort_keys=True)
-			if seq_hash in self.cache:
-				print("INTERACIONS:")
-				print(self.cache[seq_hash])
