@@ -24,7 +24,7 @@ worst = [max(iteration) for iteration in gen_alg.fitness_history]
 std = [statistics.stdev(iteration) for iteration in gen_alg.fitness_history]
 
 plt.rcParams["figure.figsize"] = [10, 15]
-fig, axs = plt.subplots(2, 1)
+fig, axs = plt.subplots(3, 1)
 
 axs[0].plot(iterations, best, 'r', label='Best solution')
 axs[0].plot(iterations, worst, 'b', label='Worst solution')
@@ -43,6 +43,14 @@ axs[1].grid(True)
 axs[1].set_title('Standard deviation of norms in population per iteration')
 axs[1].set_ylim([0,5])
 axs[1].set_xlim([0,100])
+
+axs[2].plot(iterations, gen_alg.diversity_history)
+axs[2].set_xlabel('Iteration')
+axs[2].set_ylabel('Diversity')
+axs[2].grid(True)
+axs[2].set_title('Diversity of population per iteration')
+axs[2].set_ylim([0,1])
+axs[2].set_xlim([0,100])
 
 fig.tight_layout()
 

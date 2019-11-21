@@ -143,6 +143,7 @@ class GeneticAlgorithm:
 		self.mfold = Mfold(output_folder='./', mfold_command=mfold_command)
 		self.cache = {}
 		self.fitness_history = []
+		self.diversity_history = []
 
 	"""
 	Do one iteration of the genetic algorithm.
@@ -203,9 +204,16 @@ class GeneticAlgorithm:
 	def run(self):
 		for i in range(self.iterations):
 			print("ITERATION", i)
+			self.diversity_history.append(self.diversity())
 			self.iterate()
-			if i == self.iterations/2:
-				self.mutation_rate /= 2
+
+	def diversity(self):
+		definitions = {}
+		for seq in self.population:
+			for label, bases in seq.region_definitions:
+				definitions.add(bases)
+		return (0.0 + len(definitions))/(self.population_size * len(region_definitions))
+
 	"""
 	Prints all the sequences in the population.
 	"""
