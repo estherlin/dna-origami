@@ -15,7 +15,7 @@ gen_alg = GeneticAlgorithm(
 )
 
 gen_alg.run()
-
+print(gen_alg.diversity_history)
 print(gen_alg.fitness_history)
 
 iterations = range(ITERATIONS)
@@ -45,11 +45,12 @@ axs[1].set_ylim([0,5])
 axs[1].set_xlim([0,100])
 
 axs[2].plot(iterations, gen_alg.diversity_history)
+axs[2].axhline(y=12.5, color='r', linestyle='-')
 axs[2].set_xlabel('Iteration')
 axs[2].set_ylabel('Diversity')
 axs[2].grid(True)
 axs[2].set_title('Diversity of population per iteration')
-axs[2].set_ylim([0,1])
+axs[2].set_ylim([0,15])
 axs[2].set_xlim([0,100])
 
 fig.tight_layout()

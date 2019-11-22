@@ -1,5 +1,5 @@
 from mfold_library import Strand, Region, Mfold, EnergyMatrix
-from math import exp
+from math import exp, sqrt
 import numpy as np
 from random import randrange, random, sample, choice
 import json
@@ -151,14 +151,15 @@ class GeneticAlgorithm:
 	def iterate(self):
 		# Find the fitness of each sequence in the population
 		fitnesses = [sequence.fitness(self.mfold, self.cache) for sequence in self.population]
-		power_sum = sum([exp(-fitness) for fitness in fitnesses])
-		weighted_fitnesses = [exp(-fitness)/power_sum for fitness in fitnesses]
+		power_sum = sum([exp(-fitness/10) for fitness in fitnesses])
+		weighted_fitnesses = [exp(-fitness/10)/power_sum for fitness in fitnesses]
 		self.fitness_history += [fitnesses]
 
 		# Save the best child
 		best_child = self.population[np.argmax(weighted_fitnesses)]
 
 		# Mate strands at random, weighted by fitness level
+		#midpoint = sum(weighted_fitnesses[:int(self.population_size/2)])
 		self.population = [self.generate_child(weighted_fitnesses) for i in range(self.population_size - 1)]
 
 		# Mutate the strands
@@ -199,6 +200,20 @@ class GeneticAlgorithm:
 		return Sequence.mate(parent1, parent2)
 
 	"""
+	Generate a child from the population where the population is segregated at the divide point.
+	"""
+	def generate_child_segregated(self, weighted_fitnesses, divide):
+		if random() > 0.5:
+			# Pick from below divide
+			parent1 = self._round_up(weighted_fitnesses, divide * random())
+			parent2 = self._round_up(weighted_fitnesses, divide * random())
+			return Sequence.mate(parent1, parent2)
+		else:
+			parent1 = self._round_up(weighted_fitnesses, 1 - (1 - divide) * random())
+			parent2 = self._round_up(weighted_fitnesses, 1 - (1 - divide) * random())
+			return Sequence.mate(parent1, parent2)
+
+	"""
 	Run the genetic algorithm.
 	"""
 	def run(self):
@@ -208,11 +223,16 @@ class GeneticAlgorithm:
 			self.iterate()
 
 	def diversity(self):
-		definitions = {}
+		first_region_label = self.population[0].strand_structures[0][0].name.lower()
+		region_length = len(self.population[0].region_definitions[first_region_label])
+		base_counts = [{'A': 0, 'C': 0 , 'T': 0, 'G': 0} for x in range(region_length)]
 		for seq in self.population:
-			for label, bases in seq.region_definitions:
-				definitions.add(bases)
-		return (0.0 + len(definitions))/(self.population_size * len(region_definitions))
+			bases = seq.region_definitions[first_region_label]
+			for i in range(region_length):
+				base_counts[i][bases[i]] += 1
+		avg = self.population_size/4.0
+		base_diversity = [sqrt((base['A'] - avg)**2 + (base['C'] - avg)**2 + (base['T'] - avg)**2 + (base['G'] - avg)**2)/sqrt(3) for base in base_counts]
+		return sum(base_diversity)/len(base_diversity)
 
 	"""
 	Prints all the sequences in the population.
