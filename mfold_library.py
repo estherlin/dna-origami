@@ -47,6 +47,9 @@ class Region:
         # the length of the region
         self.length = length
 
+    def __repr__(self):
+        return f"Region('{self.name}', {self.length})"
+
 class Mfold:
     energy_string = ' dG = '
     linker_sequence = 'LLL'
