@@ -17,6 +17,10 @@ gen_alg = GeneticAlgorithm(
 gen_alg.run()
 print(gen_alg.diversity_history)
 print(gen_alg.fitness_history)
+with open("diversity.dat", "w") as outfile:
+	outfile.write(gen_alg.diversity_history)
+with open("fitness.dat", "w") as outfile:
+	outfile.write(gen_alg.fitness_history)
 
 iterations = range(ITERATIONS)
 best = [min(iteration) for iteration in gen_alg.fitness_history]

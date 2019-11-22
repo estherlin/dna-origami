@@ -74,6 +74,10 @@ if __name__ == '__main__':
 	gen_alg.run()
 	print("Diversity history: ", gen_alg.diversity_history)
 	print("Fitness history: ", gen_alg.fitness_history)
+	with open("diversity.dat", "w") as outfile:
+		outfile.write(gen_alg.diversity_history)
+	with open("fitness.dat", "w") as outfile:
+		outfile.write(gen_alg.fitness_history)
 
 	iterations = range(int(params["iterations"]))
 	best = [min(iteration) for iteration in gen_alg.fitness_history]
@@ -111,4 +115,4 @@ if __name__ == '__main__':
 	axs[2].set_xlim([0,100])
 
 	fig.tight_layout()
-	plt.savefig(outfile)
+	plt.savefig(params["outfile"])
