@@ -122,7 +122,7 @@ class Sequence:
 			energy_matrix = EnergyMatrix(mfold, strands)
 			energy_matrix.create()
 			cache[region_hash] = energy_matrix.matrix
-		return np.linalg.norm(cache[region_hash]) * 1000/(TEMPERATURE * AVOGADRO * BOLTZMANN)
+		return np.linalg.norm(cache[region_hash])
 
 	"""
 	Prints out the strands in the sequence.
@@ -143,7 +143,7 @@ class GeneticAlgorithm:
 	Attributes:
 		population: A list of sequences
 	"""
-	def __init__(self, structure, mfold_command, population_size=50, mutation_rate=100, iterations=100, initial_sequences=[]):
+	def __init__(self, structure, mfold_command, population_size=50, mutation_rate=100, iterations=100, boltzmann_factor=1000/(TEMPERATURE * AVOGADRO * BOLTZMANN), initial_sequences=[]):
 		self.iterations = iterations
 		self.population_size = population_size
 		self.mutation_rate = mutation_rate
@@ -159,8 +159,8 @@ class GeneticAlgorithm:
 	def iterate(self):
 		# Find the fitness of each sequence in the population
 		fitnesses = [sequence.fitness(self.mfold, self.cache) for sequence in self.population]
-		power_sum = sum([exp(-fitness/10) for fitness in fitnesses])
-		weighted_fitnesses = [exp(-fitness/10)/power_sum for fitness in fitnesses]
+		power_sum = sum([exp(-fitness*self.boltzmann_factor) for fitness in fitnesses])
+		weighted_fitnesses = [exp(-fitness*self.boltzmann_factor)/power_sum for fitness in fitnesses]
 		self.fitness_history += [fitnesses]
 
 		# Save the best child
