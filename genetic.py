@@ -66,7 +66,7 @@ class Sequence:
 
 	@staticmethod
 	def _mate_bases_crossover(bases1, bases2):
-		midpoint = len(bases1)/2
+		midpoint = int(len(bases1)/2)
 		if random() > 0.5:
 			return bases1[:midpoint] + bases2[midpoint:]
 		else:
