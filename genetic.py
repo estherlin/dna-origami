@@ -64,6 +64,14 @@ class Sequence:
 				child[i] = bases2[i]
 		return "".join(child)
 
+	@staticmethod
+	def _mate_bases_crossover(bases1, bases2):
+		midpoint = len(bases1)/2
+		if random() > 0.5:
+			return bases1[:midpoint] + bases2[midpoint:]
+		else:
+			return bases2[:midpoint] + bases1[midpoint:]
+
 	"""
 	Create a new Sequence object by mating 2 sequences together.
 	Args:
@@ -79,7 +87,7 @@ class Sequence:
 
 		child_regions = {}
 		for region in sequence1.region_definitions:
-			child_regions[region] = Sequence._mate_bases(sequence1.region_definitions[region], sequence2.region_definitions[region])
+			child_regions[region] = Sequence._mate_bases_crossover(sequence1.region_definitions[region], sequence2.region_definitions[region])
 
 		return Sequence(child_regions, sequence1.strand_structures)
 
