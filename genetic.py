@@ -31,7 +31,7 @@ class Sequence:
 		for strand_structure in sequence_structure:
 			for region in strand_structure:
 				if not region.name.lower() in region_defs:
-					region_defs[region.name] = "".join([choice(list(Strand.allowed_bases))
+					region_defs[region.name.lower()] = "".join([choice(list(Strand.allowed_bases))
 														for i in range(0, region.length)])
 		return Sequence(region_defs, sequence_structure)
 
@@ -87,7 +87,7 @@ class Sequence:
 
 		child_regions = {}
 		for region in sequence1.region_definitions:
-			child_regions[region] = Sequence._mate_bases_crossover(sequence1.region_definitions[region], sequence2.region_definitions[region])
+			child_regions[region] = Sequence._mate_bases(sequence1.region_definitions[region], sequence2.region_definitions[region])
 
 		return Sequence(child_regions, sequence1.strand_structures)
 
