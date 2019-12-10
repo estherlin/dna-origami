@@ -1,4 +1,4 @@
-from genetic import GeneticAlgorithm
+from genetic import GeneticAlgorithm, Sequence
 from mfold_library import Region
 import matplotlib.pyplot as plt
 import statistics
@@ -6,6 +6,20 @@ import sys
 
 def parse_raw_structure(raw_structure):
 	return [[Region(region[0], int(region[1:])) for region in strand] for strand in [strand.strip().split() for strand in raw_structure.split(',')]]
+
+def parse_raw_sequences(raw_sequences, structure):
+	sequences = []
+	for raw_sequence in raw_sequences:
+		defs = {}
+		raw_strands = raw_sequence.split(',')
+		for i in range(len(raw_strands)):
+			curr_ind = 0
+			for region in structure[i]:
+				if region.name.islower():
+					defs[region.name] = raw_strands[i][curr_ind:(curr_ind + region.length - 1)]
+				curr_ind += region.length
+		sequences += [Sequence(defs, structure)]
+	return sequences
 
 
 def consume_input(key, default):
@@ -38,7 +52,6 @@ def load_configuration(configpath):
 			params[split_line[0].strip()] = split_line[1].strip()
 	return params
 
-
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		params = load_configuration(sys.argv[1])
@@ -54,6 +67,12 @@ if __name__ == '__main__':
 		params["population_size"] = consume_input('population size', '25')
 		params["mutation_rate"] = consume_input('mutation rate', '100')
 		params["iterations"] = consume_input('number of iterations', '100')
+		num_init_seq = int(consume_input('number of initial sequences', '0'))
+		params["raw_input_sequences"] = []
+		if num_init_seq > 0:
+			print("Enter one sequence per line (for example: AACG..., CCTG..., GGTA...)")
+			for i in range(num_init_seq):
+				params["raw_input_sequences"] += [input().strip()]
 
 		print("Enter the file name for the output plot of fitness and diversity history: (default: history.png)")
 		params["outfile"] = input()
@@ -63,13 +82,14 @@ if __name__ == '__main__':
 
 		save_configuration(params)
 
-
+	structure = parse_raw_structure(params["raw_structure"])
 	gen_alg = GeneticAlgorithm(
-		parse_raw_structure(params["raw_structure"]),
+		structure,
 		mfold_command=params["mfold_command"],
 		population_size=int(params["population_size"]),
 		iterations=int(params["iterations"]),
-		mutation_rate=int(params["mutation_rate"])
+		mutation_rate=int(params["mutation_rate"]),
+		initial_sequences=parse_raw_sequences(params["raw_input_sequences"], structure)
 	)
 	gen_alg.run()
 	print("Diversity history: ", gen_alg.diversity_history)
