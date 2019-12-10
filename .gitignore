@@ -4,3 +4,4 @@ __pycache__/
 *.seq
 *.icloud
 .DS_Store
+config.dat
