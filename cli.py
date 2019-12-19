@@ -16,7 +16,7 @@ def parse_raw_sequences(raw_sequences, structure):
 			curr_ind = 0
 			for region in structure[i]:
 				if region.name.islower():
-					defs[region.name] = raw_strands[i][curr_ind:(curr_ind + region.length - 1)]
+					defs[region.name] = raw_strands[i][curr_ind:(curr_ind + region.length)]
 				curr_ind += region.length
 		sequences += [Sequence(defs, structure)]
 	return sequences
@@ -51,6 +51,8 @@ def load_configuration(configpath):
 			split_line = line.split(':', 1)
 			params[split_line[0].strip()] = split_line[1].strip()
 	return params
+
+
 
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
@@ -91,13 +93,17 @@ if __name__ == '__main__':
 		mutation_rate=int(params["mutation_rate"]),
 		initial_sequences=parse_raw_sequences(params["raw_input_sequences"], structure)
 	)
-	gen_alg.run()
-	print("Diversity history: ", gen_alg.diversity_history)
-	print("Fitness history: ", gen_alg.fitness_history)
-	with open("diversity.dat", "w") as outfile:
-		outfile.write(gen_alg.diversity_history)
-	with open("fitness.dat", "w") as outfile:
-		outfile.write(gen_alg.fitness_history)
+	try:
+		gen_alg.run()
+	finally:
+		print(len(gen_alg.diversity_history) - 1, " iterations completed")
+		print("Diversity history: ", gen_alg.diversity_history)
+		print("Fitness history: ", gen_alg.fitness_history)
+		with open("diversity.dat", "w") as outfile:
+			outfile.write(gen_alg.diversity_history)
+		with open("fitness.dat", "w") as outfile:
+			outfile.write(gen_alg.fitness_history)
+		gen_alg.print_population()
 
 	iterations = range(int(params["iterations"]))
 	best = [min(iteration) for iteration in gen_alg.fitness_history]

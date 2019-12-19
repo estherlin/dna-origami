@@ -249,3 +249,4 @@ class GeneticAlgorithm:
 	def print_population(self):
 		for sequence in self.population:
 			sequence.print()
+			print(sequence.fitness(self.mfold, self.cache))
