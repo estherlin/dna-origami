@@ -5,16 +5,21 @@ import string
 import subprocess
 
 class Strand:
+    """
+    A class representing a strand of DNA.
+    """
     allowed_bases = set('ATCG')
     allowed_constraints = set(string.ascii_letters + string.digits)
     base_pair = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
 
-    """
-    Args:
-        bases: A string representing the bases in a strand
-        constraints: A list of Regions representing the structure of a strand
-    """
     def __init__(self, bases, constraints):
+        """
+        Args:
+            bases: A string representing the bases in a strand
+            constraints: A list of Regions representing the structure of a strand
+        Raises:
+            TypeError: The listed bases are not valid.
+        """
         self.bases = bases.upper()
         self.constraints = constraints
         if set(self.bases) > Strand.allowed_bases:
@@ -24,24 +29,27 @@ class Strand:
             raise TypeError('The selected constraints contain '
                           + 'non-alphanumeric characters: ' + constraints)
 
-    """
-    Returns the complement of a string of bases.
-    Args:
-        bases: The string of bases to find the complement of.
-    Returns:
-        A string representing the complement.
-    """
     @staticmethod
     def complement(bases):
+        """
+        Returns the complement of a string of bases.
+        Args:
+            bases: The string of bases to find the complement of.
+        Returns:
+            A string representing the complement.
+        """
         return "".join([Strand.base_pair[base] for base in bases])
 
 class Region:
     """
-    Args:
-        name: A string representing the name of the region. It should either be all uppercase or all lowercase.
-        length: The number of bases in the region.
+    A class representing a region of DNA on a strand. The structure of a Strand is represented as a list of Regions.
     """
     def __init__(self, name, length):
+        """
+        Args:
+            name: A string representing the name of the region. It should either be all uppercase or all lowercase.
+            length: The number of bases in the region.
+        """
         # the name that represents the region, e.g. 'A3' -> 'A'
         self.name = name
         # the length of the region
@@ -51,6 +59,9 @@ class Region:
         return f"Region('{self.name}', {self.length})"
 
 class Mfold:
+    """
+    Interface to Mfold software.
+    """
     energy_string = ' dG = '
     linker_sequence = 'LLL'
     output_suffixes = ['.aux', '.cmd', '.con', '.log', '.pnt', '.sav', '.seq', '.ss',
@@ -118,8 +129,10 @@ class Mfold:
                         + f'{all_regions[region][0]}-{all_regions[region][1]}')
         return constraints
 
-
 class EnergyMatrix:
+    """
+    The matrix of interaction energies between a list of Strands.
+    """
     def __init__(self, mfold, strands):
         self.mfold = mfold
         self.strands = strands
