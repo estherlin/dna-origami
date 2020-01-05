@@ -69,6 +69,7 @@ if __name__ == '__main__':
 		params["population_size"] = consume_input('population size', '25')
 		params["mutation_rate"] = consume_input('mutation rate', '100')
 		params["iterations"] = consume_input('number of iterations', '100')
+		params["boltzmann_factor"] = consume_input('boltzmann factor', '0.387787828')
 		num_init_seq = int(consume_input('number of initial sequences', '0'))
 		params["raw_input_sequences"] = []
 		if num_init_seq > 0:
@@ -91,6 +92,7 @@ if __name__ == '__main__':
 		population_size=int(params["population_size"]),
 		iterations=int(params["iterations"]),
 		mutation_rate=int(params["mutation_rate"]),
+		boltzmann_factor=float(params["boltzmann_factor"]),
 		initial_sequences=parse_raw_sequences(params["raw_input_sequences"], structure)
 	)
 	try:
