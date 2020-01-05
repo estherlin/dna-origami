@@ -3,5 +3,7 @@ __pycache__/
 *.aux
 *.seq
 *.icloud
+source/*
+html/*
 .DS_Store
 config.dat
