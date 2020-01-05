@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>genetic API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>genetic</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from mfold_library import Strand, Region, Mfold, EnergyMatrix
+from math import exp, sqrt
+import numpy as np
+from random import randrange, random, sample, choice
+import json
+
+TEMPERATURE = 310.15
+BOLTZMANN = 1.38064852 * (10**-23)
+AVOGADRO = 6.0221409 * (10**23)
+
+class Sequence:
+        &#34;&#34;&#34;
+        A class used to represent a Sequence (which is made up of several Strands). It is defined by a strand
+        structure and a dictionary defining the bases of the Regions with lowercased names.
+        &#34;&#34;&#34;
+        def __init__(self, region_definitions, strand_structures):
+                &#34;&#34;&#34;
+                Args:
+                        region_definitions: A map from lowercased region names to string of bases
+                        strand_structures: A list of strand structures. Each strand structure is represented by a list of Region.
+                &#34;&#34;&#34;
+                self.region_definitions = region_definitions
+                self.strand_structures = strand_structures
+
+        @staticmethod
+        def random_sequence(sequence_structure):
+                &#34;&#34;&#34;
+                Generates a random Sequence object with a given structure.
+                Args:
+                        sequence_structure: A list of Regions for each strand.
+                Returns:
+                        A Sequence object with randomized bases and the given structure.
+                &#34;&#34;&#34;
+                region_defs = {}
+                for strand_structure in sequence_structure:
+                        for region in strand_structure:
+                                if not region.name.lower() in region_defs:
+                                        region_defs[region.name.lower()] = &#34;&#34;.join([choice(list(Strand.allowed_bases))
+                                                                                                                for i in range(0, region.length)])
+                return Sequence(region_defs, sequence_structure)
+
+        def mutate(self, mutation_rate):
+                &#34;&#34;&#34;
+                Mutates the sequence.
+                Args:
+                        mutation_rate: Mutate 1 out of every mutation_rate bases
+                &#34;&#34;&#34;
+                for region in self.region_definitions:
+                        bases = list(self.region_definitions[region])
+                        for i in range(len(bases)):
+                                if randrange(mutation_rate) == 0:
+                                        bases[i] = sample(Strand.allowed_bases, 1)[0]
+                        self.region_definitions[region] = &#34;&#34;.join(bases)
+
+        @staticmethod
+        def _mate_bases(bases1, bases2):
+                &#34;&#34;&#34;
+                Creates a new string of bases by mating 2 bases together.
+                Args:
+                        bases1: A string of bases representing the first parent.
+                        bases2: A string of bases representing the second parent.
+                Returns:
+                        A string of bases, with each base randomly chosen from one of the two parent strings.
+                &#34;&#34;&#34;
+                child = list(bases1)
+                for i in range(len(bases1)):
+                        if randrange(1) == 0:
+                                child[i] = bases2[i]
+                return &#34;&#34;.join(child)
+
+        @staticmethod
+        def _mate_bases_crossover(bases1, bases2):
+                midpoint = int(len(bases1)/2)
+                if random() &gt; 0.5:
+                        return bases1[:midpoint] + bases2[midpoint:]
+                else:
+                        return bases2[:midpoint] + bases1[midpoint:]
+
+        @staticmethod
+        def mate(sequence1, sequence2):
+                &#34;&#34;&#34;
+                Create a new Sequence object by mating 2 sequences together.
+                Args:
+                        sequence1: The first parent to mate.
+                        sequence2: The second parent to mate.
+                Returns:
+                        A new Sequence object, created by mating each Region definition.
+                &#34;&#34;&#34;
+                if sequence1.strand_structures != sequence2.strand_structures:
+                        raise ValueError(&#39;The sequences being mated have different structures&#39;)
+
+                child_regions = {}
+                for region in sequence1.region_definitions:
+                        child_regions[region] = Sequence._mate_bases(sequence1.region_definitions[region], sequence2.region_definitions[region])
+
+                return Sequence(child_regions, sequence1.strand_structures)
+
+        def build_strand(self, strand_structure):
+                &#34;&#34;&#34;
+                Given a strand structure, generate the Strand object.
+                Args:
+                        strand_structure: A list of Regions
+                Returns:
+                        A Strand object with bases from the region_definitions.
+                &#34;&#34;&#34;
+                bases = &#34;&#34;
+                for region in strand_structure:
+                        if region.name.islower():
+                                bases += self.region_definitions[region.name]
+                        else:
+                                bases += Strand.complement(self.region_definitions[region.name.lower()])[::-1] # Reversed, because strands only bind in the opposite direction
+
+                return Strand(bases, strand_structure)
+
+        def fitness(self, mfold, cache):
+                &#34;&#34;&#34;
+                Calculate the fitness of the sequence.
+                Args:
+                        mfold: The mfold object to run calculations with.
+                Returns:
+                        A number representing the fitness of the sequence.
+                &#34;&#34;&#34;
+                region_hash = json.dumps(self.region_definitions, sort_keys=True)
+                if not region_hash in cache:
+                        strands = [self.build_strand(strand_structure) for strand_structure in self.strand_structures]
+                        energy_matrix = EnergyMatrix(mfold, strands)
+                        energy_matrix.create()
+                        cache[region_hash] = energy_matrix.matrix
+                return np.linalg.norm(cache[region_hash])
+
+        def print(self):
+                &#34;&#34;&#34;
+                Prints out the strands in the sequence.
+                &#34;&#34;&#34;
+                print(&#34;SEQUENCE:&#34;)
+                for strand_struct in self.strand_structures:
+                        built_strand = self.build_strand(strand_struct)
+                        print(built_strand.bases)
+
+class GeneticAlgorithm:
+        &#34;&#34;&#34;
+        Implementation of the genetic algorithm
+        &#34;&#34;&#34;
+        def __init__(self, structure, mfold_command, population_size=50, mutation_rate=100, iterations=100, boltzmann_factor=1000/(TEMPERATURE * AVOGADRO * BOLTZMANN), initial_sequences=[]):
+                &#34;&#34;&#34;
+                Args:
+                        structure: A list of strand structures
+                        population_size: The number of sequences in a population
+                        mutation_rate: Reciprocal of the rate of mutation
+                        initial_sequences: A list of user defined sequences to include in the initial population
+                Attributes:
+                        population: A list of sequences
+                &#34;&#34;&#34;
+                self.iterations = iterations
+                self.population_size = population_size
+                self.mutation_rate = mutation_rate
+                self.boltzmann_factor = boltzmann_factor
+                self.population = initial_sequences + [Sequence.random_sequence(structure) for i in range(population_size - len(initial_sequences))]
+                self.mfold = Mfold(output_folder=&#39;./&#39;, mfold_command=mfold_command)
+                self.cache = {}
+                self.fitness_history = []
+                self.diversity_history = []
+
+        def iterate(self):
+                &#34;&#34;&#34;
+                Do one iteration of the genetic algorithm.
+                &#34;&#34;&#34;
+                # Find the fitness of each sequence in the population
+                fitnesses = [sequence.fitness(self.mfold, self.cache) for sequence in self.population]
+                power_sum = sum([exp(-fitness*self.boltzmann_factor) for fitness in fitnesses])
+                weighted_fitnesses = [exp(-fitness*self.boltzmann_factor)/power_sum for fitness in fitnesses]
+                self.fitness_history += [fitnesses]
+
+                # Save the best child
+                best_child = self.population[np.argmax(weighted_fitnesses)]
+
+                # Mate strands at random, weighted by fitness level
+                #midpoint = sum(weighted_fitnesses[:int(self.population_size/2)])
+                self.population = [self.generate_child(weighted_fitnesses) for i in range(self.population_size - 1)]
+
+                # Mutate the strands
+                for sequence in self.population:
+                        sequence.mutate(self.mutation_rate)
+
+                self.population.append(best_child)
+
+        def _round_up(self, weights, number):
+                &#34;&#34;&#34;
+                Given a list of weights, find out which member of the population a number refers to.
+                Example: ([0.5, 0.5], 0.75) =&gt; 1
+                                 ([0.5, 0.5], 0.25) =&gt; 0
+                Args:
+                        weights: The probability of each member of the population to be chosen as a parent.
+                        number: The number that we want to find the Sequence of.
+                Returns:
+                        The Sequence in the population.
+                &#34;&#34;&#34;
+                curr = 0
+                for i in range(len(weights)):
+                        curr += weights[i]
+                        if curr &gt; number:
+                                return self.population[i]
+
+                return self.population[-1]
+
+        def generate_child(self, weighted_fitnesses):
+                &#34;&#34;&#34;
+                Generate a child from the population.
+                Args:
+                        weighted_fitnesses: The probability of each member of the population to be chosen as a parent.
+                Returns:
+                        A child Sequence.
+                &#34;&#34;&#34;
+                parent1 = self._round_up(weighted_fitnesses, random())
+                parent2 = self._round_up(weighted_fitnesses, random())
+                return Sequence.mate(parent1, parent2)
+
+        def generate_child_segregated(self, weighted_fitnesses, divide):
+                &#34;&#34;&#34;
+                Generate a child from the population where the population is segregated at the divide point.
+                &#34;&#34;&#34;
+                if random() &gt; 0.5:
+                        # Pick from below divide
+                        parent1 = self._round_up(weighted_fitnesses, divide * random())
+                        parent2 = self._round_up(weighted_fitnesses, divide * random())
+                        return Sequence.mate(parent1, parent2)
+                else:
+                        parent1 = self._round_up(weighted_fitnesses, 1 - (1 - divide) * random())
+                        parent2 = self._round_up(weighted_fitnesses, 1 - (1 - divide) * random())
+                        return Sequence.mate(parent1, parent2)
+
+        def run(self):
+                &#34;&#34;&#34;
+                Run the genetic algorithm.
+                &#34;&#34;&#34;
+                for i in range(self.iterations):
+                        print(&#34;ITERATION&#34;, i)
+                        self.diversity_history.append(self.diversity())
+                        self.iterate()
+
+        def diversity(self):
+                &#34;&#34;&#34;
+                Computes the diversity of the Sequences in the population.
+                &#34;&#34;&#34;
+                first_region_label = self.population[0].strand_structures[0][0].name.lower()
+                region_length = len(self.population[0].region_definitions[first_region_label])
+                base_counts = [{&#39;A&#39;: 0, &#39;C&#39;: 0 , &#39;T&#39;: 0, &#39;G&#39;: 0} for x in range(region_length)]
+                for seq in self.population:
+                        bases = seq.region_definitions[first_region_label]
+                        for i in range(region_length):
+                                base_counts[i][bases[i]] += 1
+                avg = self.population_size/4.0
+                base_diversity = [sqrt((base[&#39;A&#39;] - avg)**2 + (base[&#39;C&#39;] - avg)**2 + (base[&#39;T&#39;] - avg)**2 + (base[&#39;G&#39;] - avg)**2)/sqrt(3) for base in base_counts]
+                return sum(base_diversity)/len(base_diversity)
+
+        def print_population(self):
+                &#34;&#34;&#34;
+                Prints all the sequences in the population.
+                &#34;&#34;&#34;
+                for sequence in self.population:
+                        sequence.print()
+                        print(sequence.fitness(self.mfold, self.cache))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="genetic.random"><code class="name flex">
+<span>def <span class="ident">random</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>random() -&gt; x in the interval [0, 1).</p></section>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="genetic.GeneticAlgorithm"><code class="flex name class">
+<span>class <span class="ident">GeneticAlgorithm</span></span>
+<span>(</span><span>structure, mfold_command, population_size=50, mutation_rate=100, iterations=100, boltzmann_factor=0.38778782544220636, initial_sequences=[])</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Implementation of the genetic algorithm</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>structure</code></strong></dt>
+<dd>A list of strand structures</dd>
+<dt><strong><code>population_size</code></strong></dt>
+<dd>The number of sequences in a population</dd>
+<dt><strong><code>mutation_rate</code></strong></dt>
+<dd>Reciprocal of the rate of mutation</dd>
+<dt><strong><code>initial_sequences</code></strong></dt>
+<dd>A list of user defined sequences to include in the initial population</dd>
+</dl>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>population</code></strong></dt>
+<dd>A list of sequences</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GeneticAlgorithm:
+        &#34;&#34;&#34;
+        Implementation of the genetic algorithm
+        &#34;&#34;&#34;
+        def __init__(self, structure, mfold_command, population_size=50, mutation_rate=100, iterations=100, boltzmann_factor=1000/(TEMPERATURE * AVOGADRO * BOLTZMANN), initial_sequences=[]):
+                &#34;&#34;&#34;
+                Args:
+                        structure: A list of strand structures
+                        population_size: The number of sequences in a population
+                        mutation_rate: Reciprocal of the rate of mutation
+                        initial_sequences: A list of user defined sequences to include in the initial population
+                Attributes:
+                        population: A list of sequences
+                &#34;&#34;&#34;
+                self.iterations = iterations
+                self.population_size = population_size
+                self.mutation_rate = mutation_rate
+                self.boltzmann_factor = boltzmann_factor
+                self.population = initial_sequences + [Sequence.random_sequence(structure) for i in range(population_size - len(initial_sequences))]
+                self.mfold = Mfold(output_folder=&#39;./&#39;, mfold_command=mfold_command)
+                self.cache = {}
+                self.fitness_history = []
+                self.diversity_history = []
+
+        def iterate(self):
+                &#34;&#34;&#34;
+                Do one iteration of the genetic algorithm.
+                &#34;&#34;&#34;
+                # Find the fitness of each sequence in the population
+                fitnesses = [sequence.fitness(self.mfold, self.cache) for sequence in self.population]
+                power_sum = sum([exp(-fitness*self.boltzmann_factor) for fitness in fitnesses])
+                weighted_fitnesses = [exp(-fitness*self.boltzmann_factor)/power_sum for fitness in fitnesses]
+                self.fitness_history += [fitnesses]
+
+                # Save the best child
+                best_child = self.population[np.argmax(weighted_fitnesses)]
+
+                # Mate strands at random, weighted by fitness level
+                #midpoint = sum(weighted_fitnesses[:int(self.population_size/2)])
+                self.population = [self.generate_child(weighted_fitnesses) for i in range(self.population_size - 1)]
+
+                # Mutate the strands
+                for sequence in self.population:
+                        sequence.mutate(self.mutation_rate)
+
+                self.population.append(best_child)
+
+        def _round_up(self, weights, number):
+                &#34;&#34;&#34;
+                Given a list of weights, find out which member of the population a number refers to.
+                Example: ([0.5, 0.5], 0.75) =&gt; 1
+                                 ([0.5, 0.5], 0.25) =&gt; 0
+                Args:
+                        weights: The probability of each member of the population to be chosen as a parent.
+                        number: The number that we want to find the Sequence of.
+                Returns:
+                        The Sequence in the population.
+                &#34;&#34;&#34;
+                curr = 0
+                for i in range(len(weights)):
+                        curr += weights[i]
+                        if curr &gt; number:
+                                return self.population[i]
+
+                return self.population[-1]
+
+        def generate_child(self, weighted_fitnesses):
+                &#34;&#34;&#34;
+                Generate a child from the population.
+                Args:
+                        weighted_fitnesses: The probability of each member of the population to be chosen as a parent.
+                Returns:
+                        A child Sequence.
+                &#34;&#34;&#34;
+                parent1 = self._round_up(weighted_fitnesses, random())
+                parent2 = self._round_up(weighted_fitnesses, random())
+                return Sequence.mate(parent1, parent2)
+
+        def generate_child_segregated(self, weighted_fitnesses, divide):
+                &#34;&#34;&#34;
+                Generate a child from the population where the population is segregated at the divide point.
+                &#34;&#34;&#34;
+                if random() &gt; 0.5:
+                        # Pick from below divide
+                        parent1 = self._round_up(weighted_fitnesses, divide * random())
+                        parent2 = self._round_up(weighted_fitnesses, divide * random())
+                        return Sequence.mate(parent1, parent2)
+                else:
+                        parent1 = self._round_up(weighted_fitnesses, 1 - (1 - divide) * random())
+                        parent2 = self._round_up(weighted_fitnesses, 1 - (1 - divide) * random())
+                        return Sequence.mate(parent1, parent2)
+
+        def run(self):
+                &#34;&#34;&#34;
+                Run the genetic algorithm.
+                &#34;&#34;&#34;
+                for i in range(self.iterations):
+                        print(&#34;ITERATION&#34;, i)
+                        self.diversity_history.append(self.diversity())
+                        self.iterate()
+
+        def diversity(self):
+                &#34;&#34;&#34;
+                Computes the diversity of the Sequences in the population.
+                &#34;&#34;&#34;
+                first_region_label = self.population[0].strand_structures[0][0].name.lower()
+                region_length = len(self.population[0].region_definitions[first_region_label])
+                base_counts = [{&#39;A&#39;: 0, &#39;C&#39;: 0 , &#39;T&#39;: 0, &#39;G&#39;: 0} for x in range(region_length)]
+                for seq in self.population:
+                        bases = seq.region_definitions[first_region_label]
+                        for i in range(region_length):
+                                base_counts[i][bases[i]] += 1
+                avg = self.population_size/4.0
+                base_diversity = [sqrt((base[&#39;A&#39;] - avg)**2 + (base[&#39;C&#39;] - avg)**2 + (base[&#39;T&#39;] - avg)**2 + (base[&#39;G&#39;] - avg)**2)/sqrt(3) for base in base_counts]
+                return sum(base_diversity)/len(base_diversity)
+
+        def print_population(self):
+                &#34;&#34;&#34;
+                Prints all the sequences in the population.
+                &#34;&#34;&#34;
+                for sequence in self.population:
+                        sequence.print()
+                        print(sequence.fitness(self.mfold, self.cache))</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="genetic.GeneticAlgorithm.diversity"><code class="name flex">
+<span>def <span class="ident">diversity</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Computes the diversity of the Sequences in the population.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def diversity(self):
+        &#34;&#34;&#34;
+        Computes the diversity of the Sequences in the population.
+        &#34;&#34;&#34;
+        first_region_label = self.population[0].strand_structures[0][0].name.lower()
+        region_length = len(self.population[0].region_definitions[first_region_label])
+        base_counts = [{&#39;A&#39;: 0, &#39;C&#39;: 0 , &#39;T&#39;: 0, &#39;G&#39;: 0} for x in range(region_length)]
+        for seq in self.population:
+                bases = seq.region_definitions[first_region_label]
+                for i in range(region_length):
+                        base_counts[i][bases[i]] += 1
+        avg = self.population_size/4.0
+        base_diversity = [sqrt((base[&#39;A&#39;] - avg)**2 + (base[&#39;C&#39;] - avg)**2 + (base[&#39;T&#39;] - avg)**2 + (base[&#39;G&#39;] - avg)**2)/sqrt(3) for base in base_counts]
+        return sum(base_diversity)/len(base_diversity)</code></pre>
+</details>
+</dd>
+<dt id="genetic.GeneticAlgorithm.generate_child"><code class="name flex">
+<span>def <span class="ident">generate_child</span></span>(<span>self, weighted_fitnesses)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generate a child from the population.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>weighted_fitnesses</code></strong></dt>
+<dd>The probability of each member of the population to be chosen as a parent.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A child Sequence.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_child(self, weighted_fitnesses):
+        &#34;&#34;&#34;
+        Generate a child from the population.
+        Args:
+                weighted_fitnesses: The probability of each member of the population to be chosen as a parent.
+        Returns:
+                A child Sequence.
+        &#34;&#34;&#34;
+        parent1 = self._round_up(weighted_fitnesses, random())
+        parent2 = self._round_up(weighted_fitnesses, random())
+        return Sequence.mate(parent1, parent2)</code></pre>
+</details>
+</dd>
+<dt id="genetic.GeneticAlgorithm.generate_child_segregated"><code class="name flex">
+<span>def <span class="ident">generate_child_segregated</span></span>(<span>self, weighted_fitnesses, divide)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generate a child from the population where the population is segregated at the divide point.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_child_segregated(self, weighted_fitnesses, divide):
+        &#34;&#34;&#34;
+        Generate a child from the population where the population is segregated at the divide point.
+        &#34;&#34;&#34;
+        if random() &gt; 0.5:
+                # Pick from below divide
+                parent1 = self._round_up(weighted_fitnesses, divide * random())
+                parent2 = self._round_up(weighted_fitnesses, divide * random())
+                return Sequence.mate(parent1, parent2)
+        else:
+                parent1 = self._round_up(weighted_fitnesses, 1 - (1 - divide) * random())
+                parent2 = self._round_up(weighted_fitnesses, 1 - (1 - divide) * random())
+                return Sequence.mate(parent1, parent2)</code></pre>
+</details>
+</dd>
+<dt id="genetic.GeneticAlgorithm.iterate"><code class="name flex">
+<span>def <span class="ident">iterate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Do one iteration of the genetic algorithm.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def iterate(self):
+        &#34;&#34;&#34;
+        Do one iteration of the genetic algorithm.
+        &#34;&#34;&#34;
+        # Find the fitness of each sequence in the population
+        fitnesses = [sequence.fitness(self.mfold, self.cache) for sequence in self.population]
+        power_sum = sum([exp(-fitness*self.boltzmann_factor) for fitness in fitnesses])
+        weighted_fitnesses = [exp(-fitness*self.boltzmann_factor)/power_sum for fitness in fitnesses]
+        self.fitness_history += [fitnesses]
+
+        # Save the best child
+        best_child = self.population[np.argmax(weighted_fitnesses)]
+
+        # Mate strands at random, weighted by fitness level
+        #midpoint = sum(weighted_fitnesses[:int(self.population_size/2)])
+        self.population = [self.generate_child(weighted_fitnesses) for i in range(self.population_size - 1)]
+
+        # Mutate the strands
+        for sequence in self.population:
+                sequence.mutate(self.mutation_rate)
+
+        self.population.append(best_child)</code></pre>
+</details>
+</dd>
+<dt id="genetic.GeneticAlgorithm.print_population"><code class="name flex">
+<span>def <span class="ident">print_population</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Prints all the sequences in the population.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_population(self):
+        &#34;&#34;&#34;
+        Prints all the sequences in the population.
+        &#34;&#34;&#34;
+        for sequence in self.population:
+                sequence.print()
+                print(sequence.fitness(self.mfold, self.cache))</code></pre>
+</details>
+</dd>
+<dt id="genetic.GeneticAlgorithm.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Run the genetic algorithm.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self):
+        &#34;&#34;&#34;
+        Run the genetic algorithm.
+        &#34;&#34;&#34;
+        for i in range(self.iterations):
+                print(&#34;ITERATION&#34;, i)
+                self.diversity_history.append(self.diversity())
+                self.iterate()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="genetic.Sequence"><code class="flex name class">
+<span>class <span class="ident">Sequence</span></span>
+<span>(</span><span>region_definitions, strand_structures)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>A class used to represent a Sequence (which is made up of several Strands). It is defined by a strand
+structure and a dictionary defining the bases of the Regions with lowercased names.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>region_definitions</code></strong></dt>
+<dd>A map from lowercased region names to string of bases</dd>
+<dt><strong><code>strand_structures</code></strong></dt>
+<dd>A list of strand structures. Each strand structure is represented by a list of Region.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Sequence:
+        &#34;&#34;&#34;
+        A class used to represent a Sequence (which is made up of several Strands). It is defined by a strand
+        structure and a dictionary defining the bases of the Regions with lowercased names.
+        &#34;&#34;&#34;
+        def __init__(self, region_definitions, strand_structures):
+                &#34;&#34;&#34;
+                Args:
+                        region_definitions: A map from lowercased region names to string of bases
+                        strand_structures: A list of strand structures. Each strand structure is represented by a list of Region.
+                &#34;&#34;&#34;
+                self.region_definitions = region_definitions
+                self.strand_structures = strand_structures
+
+        @staticmethod
+        def random_sequence(sequence_structure):
+                &#34;&#34;&#34;
+                Generates a random Sequence object with a given structure.
+                Args:
+                        sequence_structure: A list of Regions for each strand.
+                Returns:
+                        A Sequence object with randomized bases and the given structure.
+                &#34;&#34;&#34;
+                region_defs = {}
+                for strand_structure in sequence_structure:
+                        for region in strand_structure:
+                                if not region.name.lower() in region_defs:
+                                        region_defs[region.name.lower()] = &#34;&#34;.join([choice(list(Strand.allowed_bases))
+                                                                                                                for i in range(0, region.length)])
+                return Sequence(region_defs, sequence_structure)
+
+        def mutate(self, mutation_rate):
+                &#34;&#34;&#34;
+                Mutates the sequence.
+                Args:
+                        mutation_rate: Mutate 1 out of every mutation_rate bases
+                &#34;&#34;&#34;
+                for region in self.region_definitions:
+                        bases = list(self.region_definitions[region])
+                        for i in range(len(bases)):
+                                if randrange(mutation_rate) == 0:
+                                        bases[i] = sample(Strand.allowed_bases, 1)[0]
+                        self.region_definitions[region] = &#34;&#34;.join(bases)
+
+        @staticmethod
+        def _mate_bases(bases1, bases2):
+                &#34;&#34;&#34;
+                Creates a new string of bases by mating 2 bases together.
+                Args:
+                        bases1: A string of bases representing the first parent.
+                        bases2: A string of bases representing the second parent.
+                Returns:
+                        A string of bases, with each base randomly chosen from one of the two parent strings.
+                &#34;&#34;&#34;
+                child = list(bases1)
+                for i in range(len(bases1)):
+                        if randrange(1) == 0:
+                                child[i] = bases2[i]
+                return &#34;&#34;.join(child)
+
+        @staticmethod
+        def _mate_bases_crossover(bases1, bases2):
+                midpoint = int(len(bases1)/2)
+                if random() &gt; 0.5:
+                        return bases1[:midpoint] + bases2[midpoint:]
+                else:
+                        return bases2[:midpoint] + bases1[midpoint:]
+
+        @staticmethod
+        def mate(sequence1, sequence2):
+                &#34;&#34;&#34;
+                Create a new Sequence object by mating 2 sequences together.
+                Args:
+                        sequence1: The first parent to mate.
+                        sequence2: The second parent to mate.
+                Returns:
+                        A new Sequence object, created by mating each Region definition.
+                &#34;&#34;&#34;
+                if sequence1.strand_structures != sequence2.strand_structures:
+                        raise ValueError(&#39;The sequences being mated have different structures&#39;)
+
+                child_regions = {}
+                for region in sequence1.region_definitions:
+                        child_regions[region] = Sequence._mate_bases(sequence1.region_definitions[region], sequence2.region_definitions[region])
+
+                return Sequence(child_regions, sequence1.strand_structures)
+
+        def build_strand(self, strand_structure):
+                &#34;&#34;&#34;
+                Given a strand structure, generate the Strand object.
+                Args:
+                        strand_structure: A list of Regions
+                Returns:
+                        A Strand object with bases from the region_definitions.
+                &#34;&#34;&#34;
+                bases = &#34;&#34;
+                for region in strand_structure:
+                        if region.name.islower():
+                                bases += self.region_definitions[region.name]
+                        else:
+                                bases += Strand.complement(self.region_definitions[region.name.lower()])[::-1] # Reversed, because strands only bind in the opposite direction
+
+                return Strand(bases, strand_structure)
+
+        def fitness(self, mfold, cache):
+                &#34;&#34;&#34;
+                Calculate the fitness of the sequence.
+                Args:
+                        mfold: The mfold object to run calculations with.
+                Returns:
+                        A number representing the fitness of the sequence.
+                &#34;&#34;&#34;
+                region_hash = json.dumps(self.region_definitions, sort_keys=True)
+                if not region_hash in cache:
+                        strands = [self.build_strand(strand_structure) for strand_structure in self.strand_structures]
+                        energy_matrix = EnergyMatrix(mfold, strands)
+                        energy_matrix.create()
+                        cache[region_hash] = energy_matrix.matrix
+                return np.linalg.norm(cache[region_hash])
+
+        def print(self):
+                &#34;&#34;&#34;
+                Prints out the strands in the sequence.
+                &#34;&#34;&#34;
+                print(&#34;SEQUENCE:&#34;)
+                for strand_struct in self.strand_structures:
+                        built_strand = self.build_strand(strand_struct)
+                        print(built_strand.bases)</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="genetic.Sequence.mate"><code class="name flex">
+<span>def <span class="ident">mate</span></span>(<span>sequence1, sequence2)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Create a new Sequence object by mating 2 sequences together.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>sequence1</code></strong></dt>
+<dd>The first parent to mate.</dd>
+<dt><strong><code>sequence2</code></strong></dt>
+<dd>The second parent to mate.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new Sequence object, created by mating each Region definition.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def mate(sequence1, sequence2):
+        &#34;&#34;&#34;
+        Create a new Sequence object by mating 2 sequences together.
+        Args:
+                sequence1: The first parent to mate.
+                sequence2: The second parent to mate.
+        Returns:
+                A new Sequence object, created by mating each Region definition.
+        &#34;&#34;&#34;
+        if sequence1.strand_structures != sequence2.strand_structures:
+                raise ValueError(&#39;The sequences being mated have different structures&#39;)
+
+        child_regions = {}
+        for region in sequence1.region_definitions:
+                child_regions[region] = Sequence._mate_bases(sequence1.region_definitions[region], sequence2.region_definitions[region])
+
+        return Sequence(child_regions, sequence1.strand_structures)</code></pre>
+</details>
+</dd>
+<dt id="genetic.Sequence.random_sequence"><code class="name flex">
+<span>def <span class="ident">random_sequence</span></span>(<span>sequence_structure)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates a random Sequence object with a given structure.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>sequence_structure</code></strong></dt>
+<dd>A list of Regions for each strand.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A Sequence object with randomized bases and the given structure.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def random_sequence(sequence_structure):
+        &#34;&#34;&#34;
+        Generates a random Sequence object with a given structure.
+        Args:
+                sequence_structure: A list of Regions for each strand.
+        Returns:
+                A Sequence object with randomized bases and the given structure.
+        &#34;&#34;&#34;
+        region_defs = {}
+        for strand_structure in sequence_structure:
+                for region in strand_structure:
+                        if not region.name.lower() in region_defs:
+                                region_defs[region.name.lower()] = &#34;&#34;.join([choice(list(Strand.allowed_bases))
+                                                                                                        for i in range(0, region.length)])
+        return Sequence(region_defs, sequence_structure)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="genetic.Sequence.build_strand"><code class="name flex">
+<span>def <span class="ident">build_strand</span></span>(<span>self, strand_structure)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Given a strand structure, generate the Strand object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>strand_structure</code></strong></dt>
+<dd>A list of Regions</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A Strand object with bases from the region_definitions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_strand(self, strand_structure):
+        &#34;&#34;&#34;
+        Given a strand structure, generate the Strand object.
+        Args:
+                strand_structure: A list of Regions
+        Returns:
+                A Strand object with bases from the region_definitions.
+        &#34;&#34;&#34;
+        bases = &#34;&#34;
+        for region in strand_structure:
+                if region.name.islower():
+                        bases += self.region_definitions[region.name]
+                else:
+                        bases += Strand.complement(self.region_definitions[region.name.lower()])[::-1] # Reversed, because strands only bind in the opposite direction
+
+        return Strand(bases, strand_structure)</code></pre>
+</details>
+</dd>
+<dt id="genetic.Sequence.fitness"><code class="name flex">
+<span>def <span class="ident">fitness</span></span>(<span>self, mfold, cache)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculate the fitness of the sequence.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>mfold</code></strong></dt>
+<dd>The mfold object to run calculations with.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A number representing the fitness of the sequence.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fitness(self, mfold, cache):
+        &#34;&#34;&#34;
+        Calculate the fitness of the sequence.
+        Args:
+                mfold: The mfold object to run calculations with.
+        Returns:
+                A number representing the fitness of the sequence.
+        &#34;&#34;&#34;
+        region_hash = json.dumps(self.region_definitions, sort_keys=True)
+        if not region_hash in cache:
+                strands = [self.build_strand(strand_structure) for strand_structure in self.strand_structures]
+                energy_matrix = EnergyMatrix(mfold, strands)
+                energy_matrix.create()
+                cache[region_hash] = energy_matrix.matrix
+        return np.linalg.norm(cache[region_hash])</code></pre>
+</details>
+</dd>
+<dt id="genetic.Sequence.mutate"><code class="name flex">
+<span>def <span class="ident">mutate</span></span>(<span>self, mutation_rate)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Mutates the sequence.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>mutation_rate</code></strong></dt>
+<dd>Mutate 1 out of every mutation_rate bases</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mutate(self, mutation_rate):
+        &#34;&#34;&#34;
+        Mutates the sequence.
+        Args:
+                mutation_rate: Mutate 1 out of every mutation_rate bases
+        &#34;&#34;&#34;
+        for region in self.region_definitions:
+                bases = list(self.region_definitions[region])
+                for i in range(len(bases)):
+                        if randrange(mutation_rate) == 0:
+                                bases[i] = sample(Strand.allowed_bases, 1)[0]
+                self.region_definitions[region] = &#34;&#34;.join(bases)</code></pre>
+</details>
+</dd>
+<dt id="genetic.Sequence.print"><code class="name flex">
+<span>def <span class="ident">print</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Prints out the strands in the sequence.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print(self):
+        &#34;&#34;&#34;
+        Prints out the strands in the sequence.
+        &#34;&#34;&#34;
+        print(&#34;SEQUENCE:&#34;)
+        for strand_struct in self.strand_structures:
+                built_strand = self.build_strand(strand_struct)
+                print(built_strand.bases)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="genetic.random" href="#genetic.random">random</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="genetic.GeneticAlgorithm" href="#genetic.GeneticAlgorithm">GeneticAlgorithm</a></code></h4>
+<ul class="">
+<li><code><a title="genetic.GeneticAlgorithm.diversity" href="#genetic.GeneticAlgorithm.diversity">diversity</a></code></li>
+<li><code><a title="genetic.GeneticAlgorithm.generate_child" href="#genetic.GeneticAlgorithm.generate_child">generate_child</a></code></li>
+<li><code><a title="genetic.GeneticAlgorithm.generate_child_segregated" href="#genetic.GeneticAlgorithm.generate_child_segregated">generate_child_segregated</a></code></li>
+<li><code><a title="genetic.GeneticAlgorithm.iterate" href="#genetic.GeneticAlgorithm.iterate">iterate</a></code></li>
+<li><code><a title="genetic.GeneticAlgorithm.print_population" href="#genetic.GeneticAlgorithm.print_population">print_population</a></code></li>
+<li><code><a title="genetic.GeneticAlgorithm.run" href="#genetic.GeneticAlgorithm.run">run</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="genetic.Sequence" href="#genetic.Sequence">Sequence</a></code></h4>
+<ul class="two-column">
+<li><code><a title="genetic.Sequence.build_strand" href="#genetic.Sequence.build_strand">build_strand</a></code></li>
+<li><code><a title="genetic.Sequence.fitness" href="#genetic.Sequence.fitness">fitness</a></code></li>
+<li><code><a title="genetic.Sequence.mate" href="#genetic.Sequence.mate">mate</a></code></li>
+<li><code><a title="genetic.Sequence.mutate" href="#genetic.Sequence.mutate">mutate</a></code></li>
+<li><code><a title="genetic.Sequence.print" href="#genetic.Sequence.print">print</a></code></li>
+<li><code><a title="genetic.Sequence.random_sequence" href="#genetic.Sequence.random_sequence">random_sequence</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

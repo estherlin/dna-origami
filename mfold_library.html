@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>mfold_library API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mfold_library</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from glob import glob
+import os
+import re
+import string
+import subprocess
+
+class Strand:
+    &#34;&#34;&#34;
+    A class representing a strand of DNA.
+    &#34;&#34;&#34;
+    allowed_bases = set(&#39;ATCG&#39;)
+    allowed_constraints = set(string.ascii_letters + string.digits)
+    base_pair = {&#39;A&#39;: &#39;T&#39;, &#39;T&#39;: &#39;A&#39;, &#39;C&#39;: &#39;G&#39;, &#39;G&#39;: &#39;C&#39;}
+
+    def __init__(self, bases, constraints):
+        &#34;&#34;&#34;
+        Args:
+            bases: A string representing the bases in a strand
+            constraints: A list of Regions representing the structure of a strand
+        Raises:
+            TypeError: The listed bases are not valid.
+        &#34;&#34;&#34;
+        self.bases = bases.upper()
+        self.constraints = constraints
+        if set(self.bases) &gt; Strand.allowed_bases:
+            raise TypeError(&#39;The selected bases contain letters &#39;
+                          + &#39;other than A, T, C, and G: &#39; + bases)
+        if set(self.constraints) &gt; Strand.allowed_constraints:
+            raise TypeError(&#39;The selected constraints contain &#39;
+                          + &#39;non-alphanumeric characters: &#39; + constraints)
+
+    @staticmethod
+    def complement(bases):
+        &#34;&#34;&#34;
+        Returns the complement of a string of bases.
+        Args:
+            bases: The string of bases to find the complement of.
+        Returns:
+            A string representing the complement.
+        &#34;&#34;&#34;
+        return &#34;&#34;.join([Strand.base_pair[base] for base in bases])
+
+class Region:
+    &#34;&#34;&#34;
+    A class representing a region of DNA on a strand. The structure of a Strand is represented as a list of Regions.
+    &#34;&#34;&#34;
+    def __init__(self, name, length):
+        &#34;&#34;&#34;
+        Args:
+            name: A string representing the name of the region. It should either be all uppercase or all lowercase.
+            length: The number of bases in the region.
+        &#34;&#34;&#34;
+        # the name that represents the region, e.g. &#39;A3&#39; -&gt; &#39;A&#39;
+        self.name = name
+        # the length of the region
+        self.length = length
+
+    def __repr__(self):
+        return f&#34;Region(&#39;{self.name}&#39;, {self.length})&#34;
+
+class Mfold:
+    &#34;&#34;&#34;
+    Interface to Mfold software.
+    &#34;&#34;&#34;
+    energy_string = &#39; dG = &#39;
+    linker_sequence = &#39;LLL&#39;
+    output_suffixes = [&#39;.aux&#39;, &#39;.cmd&#39;, &#39;.con&#39;, &#39;.log&#39;, &#39;.pnt&#39;, &#39;.sav&#39;, &#39;.seq&#39;, &#39;.ss&#39;,
+            &#39;-local.pnt&#39;, &#39;-local.seq&#39;, &#39;.ann&#39;, &#39;.ct&#39;, &#39;.ps&#39;, &#39;.det&#39;, &#39;.out&#39;,
+            &#39;.h-num&#39;, &#39;.plot&#39;, &#39;.pdf&#39;, &#39;.ss-count&#39;, &#39;-temp.det&#39;, &#39;-temp.out&#39;]
+
+
+    def __init__(self, output_folder=&#39;&#39;, mfold_command=&#39;&#39;):
+        self.folder = output_folder
+        self.command = mfold_command
+
+
+    def run(self, strand1, strand2, sequence_file=&#39;a.seq&#39;, settings_file=&#39;a.aux&#39;):
+        seq_path = os.path.join(self.folder, sequence_file)
+        set_path = os.path.join(self.folder, settings_file)
+
+        with open(seq_path, &#39;w&#39;) as seqfile:
+            seqfile.write(strand1.bases + Mfold.linker_sequence + strand2.bases)
+        with open(set_path, &#39;w&#39;) as setfile:
+            for constraint in Mfold.get_constraints(strand1, strand2):
+                setfile.write(constraint)
+
+        subprocess.run([self.command, f&#39;SEQ={seq_path}&#39;, f&#39;AUX={set_path}&#39;],
+                cwd=self.folder)
+
+    def clean_all(self):
+        for suffix in Mfold.output_suffixes:
+            for file in glob(f&#39;{self.folder}/*{suffix}&#39;):
+                os.remove(file)
+
+    def clean(self, file_prefix):
+        for suffix in Mfold.output_suffixes:
+            file_path = os.path.join(self.folder, f&#39;{file_prefix}{suffix}&#39;)
+            for file in glob(file_path):
+                os.remove(file)
+
+    def get_energy(self, details_file=&#39;a.det&#39;):
+        details_path = os.path.join(self.folder, details_file)
+        if os.path.exists(details_path):
+           with open(details_path, &#39;r&#39;) as detfile:
+                for line in detfile:
+                    if line.startswith(Mfold.energy_string):
+                        return float(line[len(Mfold.energy_string):])
+        return 0
+
+    def get_constraints(strand1, strand2):
+        constraints = []
+        all_regions = {}
+
+        curr_index = 0
+        for region in strand1.constraints:
+            all_regions[region.name] = (curr_index + 1, curr_index + region.length)
+            curr_index += region.length
+
+        curr_index += 3
+        for region in strand2.constraints:
+            all_regions[region.name] = (curr_index + 1, curr_index + region.length)
+            curr_index += region.length
+
+
+        for region in all_regions:
+            if region.isupper() and region.lower() in all_regions:
+                constraints.append(
+                        f&#39;P {all_regions[region.lower()][0]}-{all_regions[region.lower()][1]} &#39;
+                        + f&#39;{all_regions[region][0]}-{all_regions[region][1]}&#39;)
+        return constraints
+
+class EnergyMatrix:
+    &#34;&#34;&#34;
+    The matrix of interaction energies between a list of Strands.
+    &#34;&#34;&#34;
+    def __init__(self, mfold, strands):
+        self.mfold = mfold
+        self.strands = strands
+        self.matrix = [[None for strand1 in strands] for strand2 in strands]
+
+    def create(self):
+        for i, strand1 in enumerate(self.strands):
+            for j, strand2 in enumerate(self.strands):
+                self.mfold.clean_all()
+                self.mfold.run(strand1, strand2, f&#39;{i}_{j}.seq&#39;, f&#39;{i}_{j}.aux&#39;)
+                self.matrix[i][j] = self.mfold.get_energy(f&#39;{i}_{j}.det&#39;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mfold_library.EnergyMatrix"><code class="flex name class">
+<span>class <span class="ident">EnergyMatrix</span></span>
+<span>(</span><span>mfold, strands)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>The matrix of interaction energies between a list of Strands.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EnergyMatrix:
+    &#34;&#34;&#34;
+    The matrix of interaction energies between a list of Strands.
+    &#34;&#34;&#34;
+    def __init__(self, mfold, strands):
+        self.mfold = mfold
+        self.strands = strands
+        self.matrix = [[None for strand1 in strands] for strand2 in strands]
+
+    def create(self):
+        for i, strand1 in enumerate(self.strands):
+            for j, strand2 in enumerate(self.strands):
+                self.mfold.clean_all()
+                self.mfold.run(strand1, strand2, f&#39;{i}_{j}.seq&#39;, f&#39;{i}_{j}.aux&#39;)
+                self.matrix[i][j] = self.mfold.get_energy(f&#39;{i}_{j}.det&#39;)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="mfold_library.EnergyMatrix.create"><code class="name flex">
+<span>def <span class="ident">create</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create(self):
+    for i, strand1 in enumerate(self.strands):
+        for j, strand2 in enumerate(self.strands):
+            self.mfold.clean_all()
+            self.mfold.run(strand1, strand2, f&#39;{i}_{j}.seq&#39;, f&#39;{i}_{j}.aux&#39;)
+            self.matrix[i][j] = self.mfold.get_energy(f&#39;{i}_{j}.det&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mfold_library.Mfold"><code class="flex name class">
+<span>class <span class="ident">Mfold</span></span>
+<span>(</span><span>output_folder='', mfold_command='')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Interface to Mfold software.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Mfold:
+    &#34;&#34;&#34;
+    Interface to Mfold software.
+    &#34;&#34;&#34;
+    energy_string = &#39; dG = &#39;
+    linker_sequence = &#39;LLL&#39;
+    output_suffixes = [&#39;.aux&#39;, &#39;.cmd&#39;, &#39;.con&#39;, &#39;.log&#39;, &#39;.pnt&#39;, &#39;.sav&#39;, &#39;.seq&#39;, &#39;.ss&#39;,
+            &#39;-local.pnt&#39;, &#39;-local.seq&#39;, &#39;.ann&#39;, &#39;.ct&#39;, &#39;.ps&#39;, &#39;.det&#39;, &#39;.out&#39;,
+            &#39;.h-num&#39;, &#39;.plot&#39;, &#39;.pdf&#39;, &#39;.ss-count&#39;, &#39;-temp.det&#39;, &#39;-temp.out&#39;]
+
+
+    def __init__(self, output_folder=&#39;&#39;, mfold_command=&#39;&#39;):
+        self.folder = output_folder
+        self.command = mfold_command
+
+
+    def run(self, strand1, strand2, sequence_file=&#39;a.seq&#39;, settings_file=&#39;a.aux&#39;):
+        seq_path = os.path.join(self.folder, sequence_file)
+        set_path = os.path.join(self.folder, settings_file)
+
+        with open(seq_path, &#39;w&#39;) as seqfile:
+            seqfile.write(strand1.bases + Mfold.linker_sequence + strand2.bases)
+        with open(set_path, &#39;w&#39;) as setfile:
+            for constraint in Mfold.get_constraints(strand1, strand2):
+                setfile.write(constraint)
+
+        subprocess.run([self.command, f&#39;SEQ={seq_path}&#39;, f&#39;AUX={set_path}&#39;],
+                cwd=self.folder)
+
+    def clean_all(self):
+        for suffix in Mfold.output_suffixes:
+            for file in glob(f&#39;{self.folder}/*{suffix}&#39;):
+                os.remove(file)
+
+    def clean(self, file_prefix):
+        for suffix in Mfold.output_suffixes:
+            file_path = os.path.join(self.folder, f&#39;{file_prefix}{suffix}&#39;)
+            for file in glob(file_path):
+                os.remove(file)
+
+    def get_energy(self, details_file=&#39;a.det&#39;):
+        details_path = os.path.join(self.folder, details_file)
+        if os.path.exists(details_path):
+           with open(details_path, &#39;r&#39;) as detfile:
+                for line in detfile:
+                    if line.startswith(Mfold.energy_string):
+                        return float(line[len(Mfold.energy_string):])
+        return 0
+
+    def get_constraints(strand1, strand2):
+        constraints = []
+        all_regions = {}
+
+        curr_index = 0
+        for region in strand1.constraints:
+            all_regions[region.name] = (curr_index + 1, curr_index + region.length)
+            curr_index += region.length
+
+        curr_index += 3
+        for region in strand2.constraints:
+            all_regions[region.name] = (curr_index + 1, curr_index + region.length)
+            curr_index += region.length
+
+
+        for region in all_regions:
+            if region.isupper() and region.lower() in all_regions:
+                constraints.append(
+                        f&#39;P {all_regions[region.lower()][0]}-{all_regions[region.lower()][1]} &#39;
+                        + f&#39;{all_regions[region][0]}-{all_regions[region][1]}&#39;)
+        return constraints</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="mfold_library.Mfold.energy_string"><code class="name">var <span class="ident">energy_string</span></code></dt>
+<dd>
+<section class="desc"><p>str(object='') -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.<strong>str</strong>() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to 'strict'.</p></section>
+</dd>
+<dt id="mfold_library.Mfold.linker_sequence"><code class="name">var <span class="ident">linker_sequence</span></code></dt>
+<dd>
+<section class="desc"><p>str(object='') -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.<strong>str</strong>() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to 'strict'.</p></section>
+</dd>
+<dt id="mfold_library.Mfold.output_suffixes"><code class="name">var <span class="ident">output_suffixes</span></code></dt>
+<dd>
+<section class="desc"><p>list() -&gt; new empty list
+list(iterable) -&gt; new list initialized from iterable's items</p></section>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mfold_library.Mfold.clean"><code class="name flex">
+<span>def <span class="ident">clean</span></span>(<span>self, file_prefix)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clean(self, file_prefix):
+    for suffix in Mfold.output_suffixes:
+        file_path = os.path.join(self.folder, f&#39;{file_prefix}{suffix}&#39;)
+        for file in glob(file_path):
+            os.remove(file)</code></pre>
+</details>
+</dd>
+<dt id="mfold_library.Mfold.clean_all"><code class="name flex">
+<span>def <span class="ident">clean_all</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clean_all(self):
+    for suffix in Mfold.output_suffixes:
+        for file in glob(f&#39;{self.folder}/*{suffix}&#39;):
+            os.remove(file)</code></pre>
+</details>
+</dd>
+<dt id="mfold_library.Mfold.get_constraints"><code class="name flex">
+<span>def <span class="ident">get_constraints</span></span>(<span>strand1, strand2)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_constraints(strand1, strand2):
+    constraints = []
+    all_regions = {}
+
+    curr_index = 0
+    for region in strand1.constraints:
+        all_regions[region.name] = (curr_index + 1, curr_index + region.length)
+        curr_index += region.length
+
+    curr_index += 3
+    for region in strand2.constraints:
+        all_regions[region.name] = (curr_index + 1, curr_index + region.length)
+        curr_index += region.length
+
+
+    for region in all_regions:
+        if region.isupper() and region.lower() in all_regions:
+            constraints.append(
+                    f&#39;P {all_regions[region.lower()][0]}-{all_regions[region.lower()][1]} &#39;
+                    + f&#39;{all_regions[region][0]}-{all_regions[region][1]}&#39;)
+    return constraints</code></pre>
+</details>
+</dd>
+<dt id="mfold_library.Mfold.get_energy"><code class="name flex">
+<span>def <span class="ident">get_energy</span></span>(<span>self, details_file='a.det')</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_energy(self, details_file=&#39;a.det&#39;):
+    details_path = os.path.join(self.folder, details_file)
+    if os.path.exists(details_path):
+       with open(details_path, &#39;r&#39;) as detfile:
+            for line in detfile:
+                if line.startswith(Mfold.energy_string):
+                    return float(line[len(Mfold.energy_string):])
+    return 0</code></pre>
+</details>
+</dd>
+<dt id="mfold_library.Mfold.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self, strand1, strand2, sequence_file='a.seq', settings_file='a.aux')</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self, strand1, strand2, sequence_file=&#39;a.seq&#39;, settings_file=&#39;a.aux&#39;):
+    seq_path = os.path.join(self.folder, sequence_file)
+    set_path = os.path.join(self.folder, settings_file)
+
+    with open(seq_path, &#39;w&#39;) as seqfile:
+        seqfile.write(strand1.bases + Mfold.linker_sequence + strand2.bases)
+    with open(set_path, &#39;w&#39;) as setfile:
+        for constraint in Mfold.get_constraints(strand1, strand2):
+            setfile.write(constraint)
+
+    subprocess.run([self.command, f&#39;SEQ={seq_path}&#39;, f&#39;AUX={set_path}&#39;],
+            cwd=self.folder)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mfold_library.Region"><code class="flex name class">
+<span>class <span class="ident">Region</span></span>
+<span>(</span><span>name, length)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>A class representing a region of DNA on a strand. The structure of a Strand is represented as a list of Regions.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>A string representing the name of the region. It should either be all uppercase or all lowercase.</dd>
+<dt><strong><code>length</code></strong></dt>
+<dd>The number of bases in the region.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Region:
+    &#34;&#34;&#34;
+    A class representing a region of DNA on a strand. The structure of a Strand is represented as a list of Regions.
+    &#34;&#34;&#34;
+    def __init__(self, name, length):
+        &#34;&#34;&#34;
+        Args:
+            name: A string representing the name of the region. It should either be all uppercase or all lowercase.
+            length: The number of bases in the region.
+        &#34;&#34;&#34;
+        # the name that represents the region, e.g. &#39;A3&#39; -&gt; &#39;A&#39;
+        self.name = name
+        # the length of the region
+        self.length = length
+
+    def __repr__(self):
+        return f&#34;Region(&#39;{self.name}&#39;, {self.length})&#34;</code></pre>
+</details>
+</dd>
+<dt id="mfold_library.Strand"><code class="flex name class">
+<span>class <span class="ident">Strand</span></span>
+<span>(</span><span>bases, constraints)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>A class representing a strand of DNA.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>bases</code></strong></dt>
+<dd>A string representing the bases in a strand</dd>
+<dt><strong><code>constraints</code></strong></dt>
+<dd>A list of Regions representing the structure of a strand</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><strong><code>TypeError</code></strong></dt>
+<dd>The listed bases are not valid.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Strand:
+    &#34;&#34;&#34;
+    A class representing a strand of DNA.
+    &#34;&#34;&#34;
+    allowed_bases = set(&#39;ATCG&#39;)
+    allowed_constraints = set(string.ascii_letters + string.digits)
+    base_pair = {&#39;A&#39;: &#39;T&#39;, &#39;T&#39;: &#39;A&#39;, &#39;C&#39;: &#39;G&#39;, &#39;G&#39;: &#39;C&#39;}
+
+    def __init__(self, bases, constraints):
+        &#34;&#34;&#34;
+        Args:
+            bases: A string representing the bases in a strand
+            constraints: A list of Regions representing the structure of a strand
+        Raises:
+            TypeError: The listed bases are not valid.
+        &#34;&#34;&#34;
+        self.bases = bases.upper()
+        self.constraints = constraints
+        if set(self.bases) &gt; Strand.allowed_bases:
+            raise TypeError(&#39;The selected bases contain letters &#39;
+                          + &#39;other than A, T, C, and G: &#39; + bases)
+        if set(self.constraints) &gt; Strand.allowed_constraints:
+            raise TypeError(&#39;The selected constraints contain &#39;
+                          + &#39;non-alphanumeric characters: &#39; + constraints)
+
+    @staticmethod
+    def complement(bases):
+        &#34;&#34;&#34;
+        Returns the complement of a string of bases.
+        Args:
+            bases: The string of bases to find the complement of.
+        Returns:
+            A string representing the complement.
+        &#34;&#34;&#34;
+        return &#34;&#34;.join([Strand.base_pair[base] for base in bases])</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="mfold_library.Strand.allowed_bases"><code class="name">var <span class="ident">allowed_bases</span></code></dt>
+<dd>
+<section class="desc"><p>set() -&gt; new empty set object
+set(iterable) -&gt; new set object</p>
+<p>Build an unordered collection of unique elements.</p></section>
+</dd>
+<dt id="mfold_library.Strand.allowed_constraints"><code class="name">var <span class="ident">allowed_constraints</span></code></dt>
+<dd>
+<section class="desc"><p>set() -&gt; new empty set object
+set(iterable) -&gt; new set object</p>
+<p>Build an unordered collection of unique elements.</p></section>
+</dd>
+<dt id="mfold_library.Strand.base_pair"><code class="name">var <span class="ident">base_pair</span></code></dt>
+<dd>
+<section class="desc"><p>dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+(key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+d = {}
+for k, v in iterable:
+d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+in the keyword argument list.
+For example:
+dict(one=1, two=2)</p></section>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="mfold_library.Strand.complement"><code class="name flex">
+<span>def <span class="ident">complement</span></span>(<span>bases)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the complement of a string of bases.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>bases</code></strong></dt>
+<dd>The string of bases to find the complement of.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A string representing the complement.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def complement(bases):
+    &#34;&#34;&#34;
+    Returns the complement of a string of bases.
+    Args:
+        bases: The string of bases to find the complement of.
+    Returns:
+        A string representing the complement.
+    &#34;&#34;&#34;
+    return &#34;&#34;.join([Strand.base_pair[base] for base in bases])</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mfold_library.EnergyMatrix" href="#mfold_library.EnergyMatrix">EnergyMatrix</a></code></h4>
+<ul class="">
+<li><code><a title="mfold_library.EnergyMatrix.create" href="#mfold_library.EnergyMatrix.create">create</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mfold_library.Mfold" href="#mfold_library.Mfold">Mfold</a></code></h4>
+<ul class="two-column">
+<li><code><a title="mfold_library.Mfold.clean" href="#mfold_library.Mfold.clean">clean</a></code></li>
+<li><code><a title="mfold_library.Mfold.clean_all" href="#mfold_library.Mfold.clean_all">clean_all</a></code></li>
+<li><code><a title="mfold_library.Mfold.energy_string" href="#mfold_library.Mfold.energy_string">energy_string</a></code></li>
+<li><code><a title="mfold_library.Mfold.get_constraints" href="#mfold_library.Mfold.get_constraints">get_constraints</a></code></li>
+<li><code><a title="mfold_library.Mfold.get_energy" href="#mfold_library.Mfold.get_energy">get_energy</a></code></li>
+<li><code><a title="mfold_library.Mfold.linker_sequence" href="#mfold_library.Mfold.linker_sequence">linker_sequence</a></code></li>
+<li><code><a title="mfold_library.Mfold.output_suffixes" href="#mfold_library.Mfold.output_suffixes">output_suffixes</a></code></li>
+<li><code><a title="mfold_library.Mfold.run" href="#mfold_library.Mfold.run">run</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mfold_library.Region" href="#mfold_library.Region">Region</a></code></h4>
+</li>
+<li>
+<h4><code><a title="mfold_library.Strand" href="#mfold_library.Strand">Strand</a></code></h4>
+<ul class="">
+<li><code><a title="mfold_library.Strand.allowed_bases" href="#mfold_library.Strand.allowed_bases">allowed_bases</a></code></li>
+<li><code><a title="mfold_library.Strand.allowed_constraints" href="#mfold_library.Strand.allowed_constraints">allowed_constraints</a></code></li>
+<li><code><a title="mfold_library.Strand.base_pair" href="#mfold_library.Strand.base_pair">base_pair</a></code></li>
+<li><code><a title="mfold_library.Strand.complement" href="#mfold_library.Strand.complement">complement</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
