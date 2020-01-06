@@ -8,6 +8,8 @@ def parse_raw_structure(raw_structure):
 	return [[Region(region[0], int(region[1:])) for region in strand] for strand in [strand.strip().split() for strand in raw_structure.split(',')]]
 
 def parse_raw_sequences(raw_sequences, structure):
+	if isinstance(raw_sequences, str) and len(raw_sequences) <= 2:
+            return []
 	sequences = []
 	for raw_sequence in raw_sequences:
 		defs = {}
@@ -69,7 +71,7 @@ if __name__ == '__main__':
 		params["population_size"] = consume_input('population size', '25')
 		params["mutation_rate"] = consume_input('mutation rate', '100')
 		params["iterations"] = consume_input('number of iterations', '100')
-		params["boltzmann_factor"] = consume_input('boltzmann factor', '0.387787828')
+		params["boltzmann_factor"] = consume_input('Boltzmann scaling factor', '1')
 		num_init_seq = int(consume_input('number of initial sequences', '0'))
 		params["raw_input_sequences"] = []
 		if num_init_seq > 0:
@@ -102,9 +104,11 @@ if __name__ == '__main__':
 		print("Diversity history: ", gen_alg.diversity_history)
 		print("Fitness history: ", gen_alg.fitness_history)
 		with open("diversity.dat", "w") as outfile:
-			outfile.write(gen_alg.diversity_history)
+			for diversity in gen_alg.diversity_history:
+				outfile.write(str(diversity) + '\n')
 		with open("fitness.dat", "w") as outfile:
-			outfile.write(gen_alg.fitness_history)
+			for fitness in gen_alg.fitness_history:
+				outfile.write(str(fitness) + '\n')
 		gen_alg.print_population()
 
 	iterations = range(int(params["iterations"]))

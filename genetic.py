@@ -141,7 +141,7 @@ class GeneticAlgorithm:
 	"""
 	Implementation of the genetic algorithm
 	"""
-	def __init__(self, structure, mfold_command, population_size=50, mutation_rate=100, iterations=100, boltzmann_factor=1000/(TEMPERATURE * AVOGADRO * BOLTZMANN), initial_sequences=[]):
+	def __init__(self, structure, mfold_command, population_size=50, mutation_rate=100, iterations=100, boltzmann_factor=1, initial_sequences=[]):
 		"""
 		Args:
 			structure: A list of strand structures
@@ -154,7 +154,7 @@ class GeneticAlgorithm:
 		self.iterations = iterations
 		self.population_size = population_size
 		self.mutation_rate = mutation_rate
-		self.boltzmann_factor = boltzmann_factor
+		self.boltzmann_factor = boltzmann_factor * 1000/(TEMPERATURE * AVOGADRO * BOLTZMANN)
 		self.population = initial_sequences + [Sequence.random_sequence(structure) for i in range(population_size - len(initial_sequences))]
 		self.mfold = Mfold(output_folder='./', mfold_command=mfold_command)
 		self.cache = {}
