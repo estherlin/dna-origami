@@ -1,0 +1,8 @@
+raw_structure: a25 B25, b25 C25, c25 D25, d25 A25
+mfold_command: /usr/local/bin/mfold_quik
+population_size: 25
+mutation_rate: 100
+iterations: 100
+boltzmann_factor: 1
+raw_input_sequences: []
+outfile: history.png
