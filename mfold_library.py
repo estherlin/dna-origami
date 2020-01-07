@@ -39,6 +39,23 @@ class Strand:
             A string representing the complement.
         """
         return "".join([Strand.base_pair[base] for base in bases])
+    
+    def base_content(self):
+        """
+        Returns the counts of AT and GC instances in a Strand
+        Args:
+            None
+        Returns:
+            2-tuple of integers representing the count of AT and GC
+        """
+        at = 0
+        gc = 0
+        for b in self.bases:
+            if b == 'A' or b == 'T':
+                at += 1
+            else:
+                gc += 1
+        return at, gc
 
 class Region:
     """
@@ -140,8 +157,11 @@ class EnergyMatrix:
 
     def create(self):
         for i, strand1 in enumerate(self.strands):
+            ati, gci = strand1.base_content()
             for j, strand2 in enumerate(self.strands):
+                atj, gcj = strand2.base_content()
+                AT_penalty = (21.0/13.0 * (ati + atj) + 1.0 * (gci + gcj))/(ati + atj + gci + gcj)
                 self.mfold.clean_all()
                 self.mfold.run(strand1, strand2, f'{i}_{j}.seq', f'{i}_{j}.aux')
-                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det')
+                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * AT_penalty
 
