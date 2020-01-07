@@ -150,20 +150,16 @@ class EnergyMatrix:
     """
     The matrix of interaction energies between a list of Strands.
     """
-    def __init__(self, mfold, strands):
+    def __init__(self, mfold, strands, penalty):
         self.mfold = mfold
         self.strands = strands
+        self.penalty = penalty
         self.matrix = [[None for strand1 in strands] for strand2 in strands]
 
     def create(self):
         for i, strand1 in enumerate(self.strands):
-            ati, gci = strand1.base_content()
             for j, strand2 in enumerate(self.strands):
-                atj, gcj = strand2.base_content()
-                x = (ati + atj)/(ati + atj + gci + gcj)
-                penalty = 8.0/13.0 * x + 1.0
-                print(penalty)
                 self.mfold.clean_all()
                 self.mfold.run(strand1, strand2, f'{i}_{j}.seq', f'{i}_{j}.aux')
-                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * penalty
+                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * self.penalty
 

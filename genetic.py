@@ -123,8 +123,14 @@ class Sequence:
 		region_hash = json.dumps(self.region_definitions, sort_keys=True)
 		if not region_hash in cache:
 			strands = [self.build_strand(strand_structure) for strand_structure in self.strand_structures]
-			energy_matrix = EnergyMatrix(mfold, strands)
+			base_content = [strand.base_content() for strand in strands]
+			at = sum([bc[0] for bc in base_content])
+			gc = sum([bc[1] for bc in base_content])
+			x = at/(at + gc)
+			penalty = 8.0/13 *x + 1.0
+			energy_matrix = EnergyMatrix(mfold, strands, penalty)
 			energy_matrix.create()
+			print(np.linalg.norm(energy_matrix.matrix))
 			cache[region_hash] = energy_matrix.matrix
 		return np.linalg.norm(cache[region_hash])
 
