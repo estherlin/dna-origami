@@ -160,8 +160,10 @@ class EnergyMatrix:
             ati, gci = strand1.base_content()
             for j, strand2 in enumerate(self.strands):
                 atj, gcj = strand2.base_content()
-                AT_penalty = 2.0/(21.0/13.0 + 1.0) * (21.0/13.0 * (ati + atj) + 1.0 * (gci + gcj))/(ati + atj + gci + gcj) #should = 1 if count(AT)==count(GC)
+                x = (ati + atj)/(ati + atj + gci + gcj)
+                penalty = 8.0/13.0 * x + 1.0
+                print(penalty)
                 self.mfold.clean_all()
                 self.mfold.run(strand1, strand2, f'{i}_{j}.seq', f'{i}_{j}.aux')
-                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * AT_penalty
+                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * penalty
 
