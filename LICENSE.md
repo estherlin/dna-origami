@@ -23,13 +23,7 @@
    7.        If  WASHINGTON  UNIVERSITY  grants  RECIPIENT   permission   to distribute mfold  3.xxx,  under  Paragraph  6,  RECIPIENT  shall  only export, mfold 3.xxx, or any part thereof, directly or  indirectly,  to any country where such  export  or  reexport  is  authorized  in  full compliance with the laws of the United States of America.
 
 
-   8.       RECIPENT shall cite the following publications in any  abstract, paper, or presentation referencing mfold:
-
-
-   a.        M.  Zuker,  D.H.  Mathews  &   D.H.   Turner   Algorithms   and Thermodynamics for RNA Secondary  Structure  Prediction:  A  Practical Guide.  In RNA  Biochemistry  and  Biotechnology,  J.  Barciszewski  & B.F.C. Clark, eds.,  NATO  ASI  Series,  Kluwer  Academic  Publishers, (1999).
-
-
-   b.       D.H. Mathews,  J.  Sabina,  M.  Zuker  &  D.H.  Turner  Expanded Sequence  Dependence  of  Thermodynamic  Parameters  Provides   Robust Prediction of RNA Secondary Structure.  J.  Mol.  Biol.  288,  910-940 (1999).
+   8.       RECIPENT shall cite the following publications in any  abstract, paper, or presentation referencing mfold: a. M.  Zuker,  D.H.  Mathews  &   D.H.   Turner   Algorithms   and Thermodynamics for RNA Secondary  Structure  Prediction:  A  Practical Guide.  In RNA  Biochemistry  and  Biotechnology,  J.  Barciszewski  & B.F.C. Clark, eds.,  NATO  ASI  Series,  Kluwer b.       D.H. Mathews,  J.  Sabina,  M.  Zuker  &  D.H.  Turner  Expanded Sequence  Dependence  of  Thermodynamic  Parameters  Provides   Robust Prediction of RNA Secondary Structure.  J.  Mol.  Biol.  288,  910-940 (1999).
 
 
    9.       RECIPIENT acknowledges that mfold 3.xxx  is a research tool  and provided free of charge, it  is  only  provided  "as  is."  WASHINGTON UNIVERSITY, its faculty, employees, or students, have  not  obligation to  assist  RECIPIENT  in  its  use,  correction,   modification,   or enhancement and without any obligation to provide any updates.
