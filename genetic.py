@@ -126,8 +126,11 @@ class Sequence:
 			base_content = [strand.base_content() for strand in strands]
 			at = sum([bc[0] for bc in base_content])
 			gc = sum([bc[1] for bc in base_content])
+			maxrun = max([bc[2] for bc in base_content])
 			x = at/(at + gc)
-			penalty = 8.0/13 *x + 1.0
+			penalty = ((8.0/13 * x + 1.0)/(4.0/13 + 1.0))**2
+			if maxrun > 4:
+				penalty *= maxrun / 4
 			energy_matrix = EnergyMatrix(mfold, strands, penalty)
 			energy_matrix.create()
 			print(np.linalg.norm(energy_matrix.matrix))

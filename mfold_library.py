@@ -50,12 +50,22 @@ class Strand:
         """
         at = 0
         gc = 0
+        maxrun = 0
+        runlen = 0
+        last = None
         for b in self.bases:
+            if b == last:
+                runlen += 1
+            else:
+                runlen = 0
+            if runlen > maxrun:
+                maxrun = runlen
             if b == 'A' or b == 'T':
                 at += 1
             else:
                 gc += 1
-        return at, gc
+            last = b
+        return at, gc, maxrun
 
 class Region:
     """
