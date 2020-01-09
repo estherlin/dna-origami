@@ -128,12 +128,12 @@ class Sequence:
 			gc = sum([bc[1] for bc in base_content])
 			maxrun = max([bc[2] for bc in base_content])
 			x = at/(at + gc)
-			penalty = ((8.0/13 * x + 1.0)/(4.0/13 + 1.0))**2
-			if maxrun > 4:
-				penalty *= maxrun / 4
+			penalty = ((8.0/13 * x + 1.0)/(4.0/13 + 1.0))**3
+			if maxrun > 6:
+				penalty *= maxrun / 6
 			energy_matrix = EnergyMatrix(mfold, strands, penalty)
 			energy_matrix.create()
-			print(np.linalg.norm(energy_matrix.matrix))
+			print('Modified Norm: {0:.2g}'.format(np.linalg.norm(energy_matrix.matrix)))
 			cache[region_hash] = energy_matrix.matrix
 		return np.linalg.norm(cache[region_hash])
 

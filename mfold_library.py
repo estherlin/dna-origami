@@ -168,8 +168,10 @@ class EnergyMatrix:
 
     def create(self):
         for i, strand1 in enumerate(self.strands):
+            ati, gci, maxrun = strand1.base_content()
             for j, strand2 in enumerate(self.strands):
+                atj, gcj, maxrun = strand2.base_content()
                 self.mfold.clean_all()
                 self.mfold.run(strand1, strand2, f'{i}_{j}.seq', f'{i}_{j}.aux')
-                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * self.penalty
+                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * self.penalty * 10 / (ati + atj + gci + gcj)
 
