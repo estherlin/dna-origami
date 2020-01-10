@@ -173,5 +173,5 @@ class EnergyMatrix:
                 atj, gcj, maxrun = strand2.base_content()
                 self.mfold.clean_all()
                 self.mfold.run(strand1, strand2, f'{i}_{j}.seq', f'{i}_{j}.aux')
-                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * self.penalty * 20 / (ati + atj + gci + gcj)**1.5
+                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * self.penalty * 20 / (ati + atj + gci + gcj)
 
