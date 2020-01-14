@@ -5,8 +5,8 @@ from random import randrange, random, sample, choice
 import json
 
 TEMPERATURE = 310.15
-BOLTZMANN = 1.38064852 * (10**-23)
-AVOGADRO = 6.0221409 * (10**23)
+BOLTZMANN = 1.38064852e-23
+AVOGADRO = 6.0221409e23
 
 class Sequence:
 	"""
@@ -128,9 +128,9 @@ class Sequence:
 			gc = sum([bc[1] for bc in base_content])
 			maxrun = max([bc[2] for bc in base_content])
 			x = at/(at + gc)
-			penalty = ((8.0/13 * x + 1.0)/(4.0/13 + 1.0))**3
-			if maxrun > 6:
-				penalty *= maxrun / 6
+			penalty = ((8.0/13 * x + 1.0)/(4.0/13 + 1.0))**4
+			if maxrun > 4:
+				penalty *= maxrun / 4
 			penalty /= len(strands)
 			energy_matrix = EnergyMatrix(mfold, strands, penalty)
 			energy_matrix.create()
