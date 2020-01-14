@@ -3,15 +3,21 @@ from mfold_library import Region
 import matplotlib.pyplot as plt
 import statistics
 import sys
+import ast
 
 def parse_raw_structure(raw_structure):
 	return [[Region(region[0], int(region[1:])) for region in strand] for strand in [strand.strip().split() for strand in raw_structure.split(',')]]
 
 def parse_raw_sequences(raw_sequences, structure):
 	if isinstance(raw_sequences, str) and len(raw_sequences) <= 2:
-            return []
+		return []
 	sequences = []
-	for raw_sequence in raw_sequences:
+
+	r_s = raw_sequences
+	if isinstance(raw_sequences, str):
+		r_s = ast.literal_eval(raw_sequences)
+
+	for raw_sequence in r_s:
 		defs = {}
 		raw_strands = raw_sequence.split(',')
 		for i in range(len(raw_strands)):
@@ -75,7 +81,7 @@ if __name__ == '__main__':
 		num_init_seq = int(consume_input('number of initial sequences', '0'))
 		params["raw_input_sequences"] = []
 		if num_init_seq > 0:
-			print("Enter one sequence per line (for example: AACG..., CCTG..., GGTA...)")
+			print("Enter one sequence per line (for example: AACG...,CCTG...,GGTA...)")
 			for i in range(num_init_seq):
 				params["raw_input_sequences"] += [input().strip()]
 
