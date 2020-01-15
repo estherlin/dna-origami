@@ -115,7 +115,7 @@ if __name__ == '__main__':
 		with open("fitness.dat", "w") as outfile:
 			for fitness in gen_alg.fitness_history:
 				outfile.write(str(fitness) + '\n')
-		gen_alg.print_population()
+		gen_alg.print_population(final=True)
 
 	iterations = range(int(params["iterations"]))
 	best = [min(iteration) for iteration in gen_alg.fitness_history]
