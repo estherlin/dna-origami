@@ -70,11 +70,11 @@ class Sequence:
 
 	@staticmethod
 	def _mate_bases_crossover(bases1, bases2):
-		midpoint = int(len(bases1)/2)
+		crosspoint = np.random.randint(0, high=len(bases1))
 		if random() > 0.5:
-			return bases1[:midpoint] + bases2[midpoint:]
+			return bases1[:crosspoint] + bases2[crosspoint:]
 		else:
-			return bases2[:midpoint] + bases1[midpoint:]
+			return bases2[:crosspoint] + bases1[crosspoint:]
 
 	@staticmethod
 	def mate(sequence1, sequence2):
@@ -91,7 +91,7 @@ class Sequence:
 
 		child_regions = {}
 		for region in sequence1.region_definitions:
-			child_regions[region] = Sequence._mate_bases(sequence1.region_definitions[region], sequence2.region_definitions[region])
+			child_regions[region] = Sequence._mate_bases_crossover(sequence1.region_definitions[region], sequence2.region_definitions[region])
 
 		return Sequence(child_regions, sequence1.strand_structures)
 
