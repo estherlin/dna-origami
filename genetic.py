@@ -272,5 +272,3 @@ class GeneticAlgorithm:
 		"""
 		for sequence in self.population:
 			sequence.print()
-			print('Unmodified Fitness: {0:.2g}\n'.format(sequence.fitness(self.mfold, self.cache, final)))
-			print('Modified Fitness: {0:.2g}\n'.format(sequence.fitness(self.mfold, self.cache)))
