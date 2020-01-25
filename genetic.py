@@ -5,8 +5,8 @@ from random import randrange, random, sample, choice
 import json
 
 TEMPERATURE = 310.15
-BOLTZMANN = 1.38064852 * (10**-23)
-AVOGADRO = 6.0221409 * (10**23)
+BOLTZMANN = 1.38064852e-23
+AVOGADRO = 6.0221409e23
 
 class Sequence:
 	"""
@@ -70,11 +70,11 @@ class Sequence:
 
 	@staticmethod
 	def _mate_bases_crossover(bases1, bases2):
-		midpoint = int(len(bases1)/2)
+		crosspoint = np.random.randint(0, high=len(bases1))
 		if random() > 0.5:
-			return bases1[:midpoint] + bases2[midpoint:]
+			return bases1[:crosspoint] + bases2[crosspoint:]
 		else:
-			return bases2[:midpoint] + bases1[midpoint:]
+			return bases2[:crosspoint] + bases1[crosspoint:]
 
 	@staticmethod
 	def mate(sequence1, sequence2):
@@ -91,7 +91,7 @@ class Sequence:
 
 		child_regions = {}
 		for region in sequence1.region_definitions:
-			child_regions[region] = Sequence._mate_bases(sequence1.region_definitions[region], sequence2.region_definitions[region])
+			child_regions[region] = Sequence._mate_bases_crossover(sequence1.region_definitions[region], sequence2.region_definitions[region])
 
 		return Sequence(child_regions, sequence1.strand_structures)
 
@@ -112,7 +112,7 @@ class Sequence:
 
 		return Strand(bases, strand_structure)
 
-	def fitness(self, mfold, cache):
+	def fitness(self, mfold, cache, final=False):
 		"""
 		Calculate the fitness of the sequence.
 		Args:
@@ -123,8 +123,21 @@ class Sequence:
 		region_hash = json.dumps(self.region_definitions, sort_keys=True)
 		if not region_hash in cache:
 			strands = [self.build_strand(strand_structure) for strand_structure in self.strand_structures]
-			energy_matrix = EnergyMatrix(mfold, strands)
+			base_content = [strand.base_content() for strand in strands]
+			at = sum([bc[0] for bc in base_content])
+			gc = sum([bc[1] for bc in base_content])
+			maxrun = max([bc[2] for bc in base_content])
+			x = at/(at + gc)
+			penalty = ((8.0/13 * x + 1.0)/(4.0/13 + 1.0))**4
+			if maxrun > 4:
+				penalty *= maxrun / 4
+			penalty /= len(strands)
+			if final:
+				penalty = 1
+			energy_matrix = EnergyMatrix(mfold, strands, penalty)
 			energy_matrix.create()
+			if final:
+				print('Final Norm: {0:.2g}'.format(np.linalg.norm(energy_matrix.matrix)))
 			cache[region_hash] = energy_matrix.matrix
 		return np.linalg.norm(cache[region_hash])
 
@@ -253,10 +266,9 @@ class GeneticAlgorithm:
 		base_diversity = [sqrt((base['A'] - avg)**2 + (base['C'] - avg)**2 + (base['T'] - avg)**2 + (base['G'] - avg)**2)/sqrt(3) for base in base_counts]
 		return sum(base_diversity)/len(base_diversity)
 
-	def print_population(self):
+	def print_population(self, final=False):
 		"""
 		Prints all the sequences in the population.
 		"""
 		for sequence in self.population:
 			sequence.print()
-			print(sequence.fitness(self.mfold, self.cache))

@@ -39,6 +39,33 @@ class Strand:
             A string representing the complement.
         """
         return "".join([Strand.base_pair[base] for base in bases])
+    
+    def base_content(self):
+        """
+        Returns the counts of AT and GC instances in a Strand
+        Args:
+            None
+        Returns:
+            2-tuple of integers representing the count of AT and GC
+        """
+        at = 0
+        gc = 0
+        maxrun = 0
+        runlen = 0
+        last = None
+        for b in self.bases:
+            if b == last:
+                runlen += 1
+            else:
+                runlen = 0
+            if runlen > maxrun:
+                maxrun = runlen
+            if b == 'A' or b == 'T':
+                at += 1
+            else:
+                gc += 1
+            last = b
+        return at, gc, maxrun
 
 class Region:
     """
@@ -133,15 +160,18 @@ class EnergyMatrix:
     """
     The matrix of interaction energies between a list of Strands.
     """
-    def __init__(self, mfold, strands):
+    def __init__(self, mfold, strands, penalty):
         self.mfold = mfold
         self.strands = strands
+        self.penalty = penalty
         self.matrix = [[None for strand1 in strands] for strand2 in strands]
 
     def create(self):
         for i, strand1 in enumerate(self.strands):
+            ati, gci, maxrun = strand1.base_content()
             for j, strand2 in enumerate(self.strands):
+                atj, gcj, maxrun = strand2.base_content()
                 self.mfold.clean_all()
                 self.mfold.run(strand1, strand2, f'{i}_{j}.seq', f'{i}_{j}.aux')
-                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det')
+                self.matrix[i][j] = self.mfold.get_energy(f'{i}_{j}.det') * self.penalty * 20 / (ati + atj + gci + gcj)
 

@@ -115,7 +115,7 @@ if __name__ == '__main__':
 		with open("fitness.dat", "w") as outfile:
 			for fitness in gen_alg.fitness_history:
 				outfile.write(str(fitness) + '\n')
-		gen_alg.print_population()
+		gen_alg.print_population(final=True)
 
 	iterations = range(int(params["iterations"]))
 	best = [min(iteration) for iteration in gen_alg.fitness_history]
@@ -132,16 +132,16 @@ if __name__ == '__main__':
 	axs[0].grid(True)
 	axs[0].legend()
 	axs[0].set_title('Norms of best and worst solutions per iteration')
-	axs[0].set_ylim([0,25])
-	axs[0].set_xlim([0,100])
+	axs[0].set_ylim([0.8*min(best),1.2*max(worst)])
+	axs[0].set_xlim([min(iterations),max(iterations)])
 
 	axs[1].plot(iterations, std)
 	axs[1].set_xlabel('Iteration')
 	axs[1].set_ylabel('Standard deviation')
 	axs[1].grid(True)
 	axs[1].set_title('Standard deviation of norms in population per iteration')
-	axs[1].set_ylim([0,5])
-	axs[1].set_xlim([0,100])
+	axs[1].set_ylim([0, 1.2*max(std)])
+	axs[1].set_xlim([min(iterations),max(iterations)])
 
 	axs[2].plot(iterations, gen_alg.diversity_history)
 	axs[2].axhline(y=12.5, color='r', linestyle='-')
@@ -149,8 +149,8 @@ if __name__ == '__main__':
 	axs[2].set_ylabel('Diversity')
 	axs[2].grid(True)
 	axs[2].set_title('Diversity of population per iteration')
-	axs[2].set_ylim([0,15])
-	axs[2].set_xlim([0,100])
+	axs[2].set_ylim([0,1.2*max(gen_alg.diversity_history)])
+	axs[2].set_xlim([min(iterations),max(iterations)])
 
 	fig.tight_layout()
 	plt.savefig(params["outfile"])
