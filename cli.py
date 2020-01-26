@@ -4,9 +4,10 @@ import matplotlib.pyplot as plt
 import statistics
 import sys
 import ast
+import re
 
 def parse_raw_structure(raw_structure):
-	return [[Region(region[0], int(region[1:])) for region in strand] for strand in [strand.strip().split() for strand in raw_structure.split(',')]]
+	return [[Region(re.findall('\D+', region)[0], int(re.findall('\d+', region)[0])) for region in strand] for strand in [strand.strip().split() for strand in raw_structure.split(',')]]
 
 def parse_raw_sequences(raw_sequences, structure):
 	if isinstance(raw_sequences, str) and len(raw_sequences) <= 2:
