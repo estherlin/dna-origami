@@ -60,6 +60,16 @@ def get_user_input():
 				params["input_sequence_definitions"][i - 1][region[:div]] = region[div + 1:]
 			else:
 				break
+	print('Enter all fixed regions followed by an empty line')
+	params["fixed_regions"] = {}
+	while True:
+		region = input().strip()
+		if len(region) > 0:
+			div = region.find(':')
+			params["fixed_regions"][region[:div]] = region[div + 1:]
+		else:
+			break
+
 	print("Enter the file name for the output plot of fitness and diversity history: (default: history.png)")
 	params["outfile"] = input()
 	if not params["outfile"]:
@@ -82,7 +92,8 @@ if __name__ == '__main__':
 		iterations=int(params["iterations"]),
 		mutation_rate=int(params["mutation_rate"]),
 		boltzmann_factor=float(params["boltzmann_factor"]),
-		initial_sequences=[Sequence(definition, structure) for definition in params["input_sequence_definitions"]]
+		initial_sequences=[Sequence(definition, structure) for definition in params["input_sequence_definitions"]],
+		fixed_regions=params['fixed_regions']
 	)
 	try:
 		gen_alg.run()
