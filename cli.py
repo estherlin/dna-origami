@@ -3,7 +3,6 @@ from mfold_library import Region
 import matplotlib.pyplot as plt
 import statistics
 import sys
-import ast
 import re
 import yaml
 
@@ -38,40 +37,42 @@ def load_configuration(configpath):
 
 	return params
 
+def get_user_input():
+	params = {}
+
+	print("Enter your desired shape (for example: a25 B25, b25 C25, c25 D25, d25 A25)")
+	params["raw_structure"] = input().strip()
+	print(f"Given desired shape: {parse_raw_structure(params['raw_structure'])}\n")
+
+	params["mfold_command"] = consume_input('the path to Mfold executable', '~/.local/bin/mfold_quik')
+	params["population_size"] = consume_input('population size', '25')
+	params["mutation_rate"] = consume_input('mutation rate', '100')
+	params["iterations"] = consume_input('number of iterations', '100')
+	params["boltzmann_factor"] = consume_input('Boltzmann scaling factor', '1')
+	num_init_seq = int(consume_input('number of initial sequences', '0'))
+	params["input_sequence_definitions"] = [{} for i in range(num_init_seq)]
+	for i in range(1, num_init_seq + 1):
+		print(f"Enter each region definition of sequence #{i} on a new line followed by an empty line")
+		while True:
+			region = input().strip()
+			if len(region) > 0:
+				div = region.find(':')
+				params["input_sequence_definitions"][i - 1][region[:div]] = region[div + 1:]
+			else:
+				break
+	print("Enter the file name for the output plot of fitness and diversity history: (default: history.png)")
+	params["outfile"] = input()
+	if not params["outfile"]:
+		params["outfile"] = "history.png"
+	print(f"Output plot will be saved to: {params['outfile']}\n")
+	save_configuration(params)
+	return params
+
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		params = load_configuration(sys.argv[1])
-		print(params)
 	else:
-		params = {}
-
-		print("Enter your desired shape (for example: a25 B25, b25 C25, c25 D25, d25 A25)")
-		params["raw_structure"] = input().strip()
-		print(f"Given desired shape: {parse_raw_structure(params['raw_structure'])}\n")
-
-		params["mfold_command"] = consume_input('the path to Mfold executable', '~/.local/bin/mfold_quik')
-		params["population_size"] = consume_input('population size', '25')
-		params["mutation_rate"] = consume_input('mutation rate', '100')
-		params["iterations"] = consume_input('number of iterations', '100')
-		params["boltzmann_factor"] = consume_input('Boltzmann scaling factor', '1')
-		num_init_seq = int(consume_input('number of initial sequences', '0'))
-		params["input_sequence_definitions"] = [{} for i in range(num_init_seq)]
-		for i in range(1, num_init_seq + 1):
-			print(f"Enter each region definition of sequence #{i} on a new line followed by an empty line")
-			while True:
-				region = input().strip()
-				if len(region) > 0:
-					div = region.find(':')
-					params["input_sequence_definitions"][i - 1][region[:div]] = region[div + 1:]
-				else:
-					break
-		print("Enter the file name for the output plot of fitness and diversity history: (default: history.png)")
-		params["outfile"] = input()
-		if not params["outfile"]:
-			params["outfile"] = "history.png"
-		print(f"Output plot will be saved to: {params['outfile']}\n")
-
-		save_configuration(params)
+		params = get_user_input()
 
 	structure = parse_raw_structure(params["raw_structure"])
 	gen_alg = GeneticAlgorithm(
