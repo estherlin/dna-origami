@@ -34,7 +34,7 @@ class Sequence:
 		region_defs = {}
 		for strand_structure in sequence_structure:
 			for region in strand_structure:
-				if region.name.lower():
+				if region.name.islower():
 					if region.name in fixed_regions:
 						region_defs[region.name] = fixed_regions[region.name]
 					else:
@@ -42,14 +42,14 @@ class Sequence:
 															for i in range(0, region.length)])
 		return Sequence(region_defs, sequence_structure)
 
-	def mutate(self, mutation_rate, fixed_regions):
+	def mutate(self, mutation_rate, fixed_regions={}):
 		"""
 		Mutates the sequence.
 		Args:
 			mutation_rate: Mutate 1 out of every mutation_rate bases
 		"""
 		for region in self.region_definitions:
-			if region.name in fixed_regions:
+			if region in fixed_regions:
 				continue
 			bases = list(self.region_definitions[region])
 			for i in range(len(bases)):
@@ -192,6 +192,7 @@ class GeneticAlgorithm:
 		self.cache = {}
 		self.fitness_history = []
 		self.diversity_history = []
+		self.fixed_regions = fixed_regions
 
 	def iterate(self):
 		"""
@@ -212,7 +213,7 @@ class GeneticAlgorithm:
 
 		# Mutate the strands
 		for sequence in self.population:
-			sequence.mutate(self.mutation_rate, fixed_regions)
+			sequence.mutate(self.mutation_rate, self.fixed_regions)
 
 		self.population.append(best_child)
 
