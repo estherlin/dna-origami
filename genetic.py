@@ -131,9 +131,9 @@ class Sequence:
 			penalty = ((8.0/13 * x + 1.0)/(4.0/13 + 1.0))**4
 			if maxrun > 4:
 				penalty *= maxrun / 4
-			penalty /= len(strands)
 			if final:
 				penalty = 1
+			penalty /= len(strands)
 			energy_matrix = EnergyMatrix(mfold, strands, penalty)
 			energy_matrix.create()
 			if final:
@@ -173,7 +173,8 @@ class GeneticAlgorithm:
 		self.cache = {}
 		self.fitness_history = []
 		self.diversity_history = []
-
+		self.best_child = None
+		
 	def iterate(self):
 		"""
 		Do one iteration of the genetic algorithm.
@@ -186,6 +187,7 @@ class GeneticAlgorithm:
 
 		# Save the best child
 		best_child = self.population[np.argmax(weighted_fitnesses)]
+		self.best_child = best_child
 
 		# Mate strands at random, weighted by fitness level
 		#midpoint = sum(weighted_fitnesses[:int(self.population_size/2)])

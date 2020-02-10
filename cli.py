@@ -116,6 +116,8 @@ if __name__ == '__main__':
 			for fitness in gen_alg.fitness_history:
 				outfile.write(str(fitness) + '\n')
 		gen_alg.print_population(final=True)
+		print("Best Sequences: \n")
+		gen_alg.best_child.print()
 
 	iterations = range(int(params["iterations"]))
 	best = [min(iteration) for iteration in gen_alg.fitness_history]
