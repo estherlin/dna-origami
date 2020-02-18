@@ -116,7 +116,7 @@ if __name__ == '__main__':
 		with open("fitness.dat", "w") as outfile:
 			for fitness in gen_alg.fitness_history:
 				outfile.write(str(fitness) + '\n')
-		gen_alg.print_population(final=True)
+		gen_alg.print_population()
 		print("Best Sequences: \n")
 		gen_alg.best_child.print()
 
