@@ -23,7 +23,7 @@ class Sequence:
 		self.strand_structures = strand_structures
 
 	@staticmethod
-	def random_sequence(sequence_structure):
+	def random_sequence(sequence_structure, fixed_regions={}):
 		"""
 		Generates a random Sequence object with a given structure.
 		Args:
@@ -34,18 +34,23 @@ class Sequence:
 		region_defs = {}
 		for strand_structure in sequence_structure:
 			for region in strand_structure:
-				if not region.name.lower() in region_defs:
-					region_defs[region.name.lower()] = "".join([choice(list(Strand.allowed_bases))
-														for i in range(0, region.length)])
+				if region.name.islower():
+					if region.name in fixed_regions:
+						region_defs[region.name] = fixed_regions[region.name]
+					else:
+						region_defs[region.name.lower()] = "".join([choice(list(Strand.allowed_bases))
+															for i in range(0, region.length)])
 		return Sequence(region_defs, sequence_structure)
 
-	def mutate(self, mutation_rate):
+	def mutate(self, mutation_rate, fixed_regions={}):
 		"""
 		Mutates the sequence.
 		Args:
 			mutation_rate: Mutate 1 out of every mutation_rate bases
 		"""
 		for region in self.region_definitions:
+			if region in fixed_regions:
+				continue
 			bases = list(self.region_definitions[region])
 			for i in range(len(bases)):
 				if randrange(mutation_rate) == 0:
@@ -150,13 +155,27 @@ class GeneticAlgorithm:
 	"""
 	Implementation of the genetic algorithm
 	"""
-	def __init__(self, structure, mfold_command, population_size=50, mutation_rate=100, iterations=100, boltzmann_factor=1, initial_sequences=[]):
+	def __init__(
+		self,
+		structure,
+		mfold_command,
+		population_size=50,
+		mutation_rate=100,
+		iterations=100,
+		boltzmann_factor=1,
+		initial_sequences=[],
+		fixed_regions={}
+	):
 		"""
 		Args:
 			structure: A list of strand structures
+			mfold_command: Command to run mfold 
 			population_size: The number of sequences in a population
 			mutation_rate: Reciprocal of the rate of mutation
+			iterations: Number of iterations to run
+			boltzmann_factor: Factor by which to multiply the boltzmann factor
 			initial_sequences: A list of user defined sequences to include in the initial population
+			fixed_regions: A dictionary of fixed regions 
 		Attributes:
 			population: A list of sequences
 		"""
@@ -164,13 +183,14 @@ class GeneticAlgorithm:
 		self.population_size = population_size
 		self.mutation_rate = mutation_rate
 		self.boltzmann_factor = boltzmann_factor * 1000/(TEMPERATURE * AVOGADRO * BOLTZMANN)
-		self.population = initial_sequences + [Sequence.random_sequence(structure) for i in range(population_size - len(initial_sequences))]
+		self.population = initial_sequences + [Sequence.random_sequence(structure, fixed_regions) for i in range(population_size - len(initial_sequences))]
 		self.mfold = Mfold(output_folder='./', mfold_command=mfold_command)
 		self.cache = {}
 		self.fitness_history = []
 		self.diversity_history = []
 		self.best_child = None
-		
+		self.fixed_regions = fixed_regions
+
 	def iterate(self):
 		"""
 		Do one iteration of the genetic algorithm.
@@ -191,7 +211,7 @@ class GeneticAlgorithm:
 
 		# Mutate the strands
 		for sequence in self.population:
-			sequence.mutate(self.mutation_rate)
+			sequence.mutate(self.mutation_rate, self.fixed_regions)
 
 		self.population.append(best_child)
 
