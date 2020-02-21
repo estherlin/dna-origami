@@ -131,10 +131,11 @@ class Sequence:
 			penalty = ((8.0/13 * x + 1.0)/(4.0/13 + 1.0))**4
 			if maxrun > 3:
 				penalty *= maxrun / 3
+			penalty /=  len(strands)
 			energy_matrix = EnergyMatrix(mfold, strands, penalty)
 			energy_matrix.create()
 			cache[region_hash] = energy_matrix.matrix
-		return np.linalg.norm(cache[region_hash], ord=1) / len(strands)
+		return np.linalg.norm(cache[region_hash], ord=1)
 
 	def print(self):
 		"""
