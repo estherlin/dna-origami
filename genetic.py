@@ -117,7 +117,7 @@ class Sequence:
 
 		return Strand(bases, strand_structure)
 
-	def fitness(self, mfold, cache, final=False):
+	def fitness(self, mfold, cache):
 		"""
 		Calculate the fitness of the sequence.
 		Args:
@@ -134,17 +134,13 @@ class Sequence:
 			maxrun = max([bc[2] for bc in base_content])
 			x = at/(at + gc)
 			penalty = ((8.0/13 * x + 1.0)/(4.0/13 + 1.0))**4
-			if maxrun > 4:
-				penalty *= maxrun / 4
-			penalty /= len(strands)
-			if final:
-				penalty = 1
+			if maxrun > 3:
+				penalty *= maxrun / 3
+			penalty /=  len(strands)
 			energy_matrix = EnergyMatrix(mfold, strands, penalty)
 			energy_matrix.create()
-			if final:
-				print('Final Norm: {0:.2g}'.format(np.linalg.norm(energy_matrix.matrix)))
 			cache[region_hash] = energy_matrix.matrix
-		return np.linalg.norm(cache[region_hash])
+		return np.linalg.norm(cache[region_hash], ord=1)
 
 	def print(self):
 		"""
@@ -192,6 +188,7 @@ class GeneticAlgorithm:
 		self.cache = {}
 		self.fitness_history = []
 		self.diversity_history = []
+		self.best_child = None
 		self.fixed_regions = fixed_regions
 
 	def iterate(self):
@@ -206,6 +203,7 @@ class GeneticAlgorithm:
 
 		# Save the best child
 		best_child = self.population[np.argmax(weighted_fitnesses)]
+		self.best_child = best_child
 
 		# Mate strands at random, weighted by fitness level
 		#midpoint = sum(weighted_fitnesses[:int(self.population_size/2)])
@@ -286,7 +284,7 @@ class GeneticAlgorithm:
 		base_diversity = [sqrt((base['A'] - avg)**2 + (base['C'] - avg)**2 + (base['T'] - avg)**2 + (base['G'] - avg)**2)/sqrt(3) for base in base_counts]
 		return sum(base_diversity)/len(base_diversity)
 
-	def print_population(self, final=False):
+	def print_population(self):
 		"""
 		Prints all the sequences in the population.
 		"""
