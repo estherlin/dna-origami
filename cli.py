@@ -5,9 +5,27 @@ import statistics
 import sys
 
 def parse_raw_structure(raw_structure):
+	"""
+	Parses a set of constraints that determine which sections of strands are complementary.
+	
+	Args:
+		raw_structure: the constraints to parse. sample input: (a25 B25, b25 C25, c25 D25, d25 A25).
+	Returns:
+		A number representing the fitness of the sequence.
+	"""
 	return [[Region(region[0], int(region[1:])) for region in strand] for strand in [strand.strip().split() for strand in raw_structure.split(',')]]
 
 def parse_raw_sequences(raw_sequences, structure):
+	"""
+	Parses an initial set of DNA sequences with a set of constraints that determine 
+	which sections of strands are complementary.
+	
+	Args:
+		raw_sequences: initial DNA sequences to optimize.
+		structure: raw structure. sample input: (a25 B25, b25 C25, c25 D25, d25 A25).
+	Returns:
+		A number representing the fitness of the sequence.
+	"""
 	sequences = []
 	for raw_sequence in raw_sequences:
 		defs = {}
